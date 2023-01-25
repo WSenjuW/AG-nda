@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AG-nda",
-    "slug": "AG-nda",
+    "slug": "ag-nda",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +28,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ad63f09c-4d03-4c58-ba95-ba71dbd66b74"
+      }
+    },
+    "owner": "wsenjuw"
   }
 }

@@ -1,11 +1,40 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, View, StatusBar, ScrollView, TouchableOpacity, Text } from 'react-native';
+import BtnList from './Componentes/BtnList';
+import BtnListPlus from './Componentes/BtnListPlus';
 
 export default function App() {
+  const [menu, setMenu] = useState(false);
+  const [modal, setModal] = useState(false);
+
+
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <StatusBar hidden={true} />
+      <BtnList menuData={{ menu, setMenu }} />
+      <BtnListPlus modalData={{ modal, setModal }} />
+      <ScrollView>
+      </ScrollView>
+      <TouchableOpacity
+        onPress={() => menu === true ? setMenu(false) : setModal(false)}
+        style={{ ...styles.darkBackground, width: (menu === true || modal === true ? "100%" : 0) }} />
+      {modal === true &&
+        <View
+          style={{ width: '90%', height: "70%", backgroundColor: '#f1f1f1', position: 'absolute' }}>
+
+        </View>
+      }
+      <ScrollView
+        style={{ ...styles.Menu, width: (menu ? "70%" : 0) }}
+      >
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>Iniciar Sesión</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuItemText}>Modo</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 }
@@ -13,8 +42,43 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#2A3869',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden'
   },
+  darkBackground: {
+    width: '100%',
+    height: "100%",
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    backgroundColor: '#00000090',
+  },
+  Menu: {
+    height: '100%',
+    backgroundColor: '#f1f1f1',
+    position: 'absolute',
+    left: 0,
+    paddingTop: 20,
+    display:'flex',
+    flexDirection:'column',
+    alignContent:'center',
+    
+  },
+  menuItem:{
+    width:"92%",
+    height:60,
+    backgroundColor:"#D9D9D9",
+    display:'flex',
+    alignContent:'center',
+    justifyContent:'center',
+    marginLeft:'4%',
+    margin: 10
+  },
+  menuItemText:{
+    fontSize:18,
+    maxWidth:200,
+    marginLeft:10
+  }
 });
