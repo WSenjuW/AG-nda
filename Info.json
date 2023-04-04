@@ -1,0 +1,34 @@
+{
+  "data": [
+    {
+      "mensaje": "este es mi mensaje numero 1",
+      "id": 1,
+      "date": "12/12/2023"
+    },
+    {
+      "mensaje": "este es mi mensaje numero 2",
+      "id": 2,
+      "date": "12/12/2023"
+    },
+    {
+      "mensaje": "este es mi mensaje numero 3",
+      "id": 3,
+      "date": "12/12/2023"
+    },
+    {
+      "mensaje": "este es mi mensaje numero 4",
+      "id": 4,
+      "date": "12/12/2023"
+    },
+    {
+      "mensaje": "este es mi mensaje numero 5",
+      "id": 5,
+      "date": "12/12/2023"
+    },
+    {
+      "mensaje": "este es mi mensaje numero 6",
+      "id": 6,
+      "date": "12/12/2023"
+    }
+  ]
+}

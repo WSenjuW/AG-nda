@@ -1,97 +1,88 @@
-import { useState } from 'react';
-import { StyleSheet, View, StatusBar, ScrollView, TouchableOpacity, Text } from 'react-native';
-import BtnList from './Componentes/BtnList';
-import BtnListPlus from './Componentes/BtnListPlus';
+import { useState, useEffect, useContext } from 'react';
+import { StyleSheet, View, StatusBar, FlatList, SafeAreaView, Text } from 'react-native';
+import { BtnMenu } from './Componentes/Btns';
+import { BtnAddNewNote } from './Componentes/Btns';
+import Menu from './Componentes/Menu';
+import { ModalComponent } from './Componentes/modal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ItemDate from './Componentes/itemDate';
+import { DataContext, InfoContext } from './Componentes/InfoContext';
+
 
 export default function App() {
+  const [modal, setModal] = useState(null);
   const [menu, setMenu] = useState(false);
-  const [modal, setModal] = useState(false);
+  let info = useContext(DataContext);
 
-  console.log(new Date);
+  useEffect(() => {
+    async function updateInfo() {
+      let data = await AsyncStorage.getItem('info');
+      if (data === null) {
+        await AsyncStorage.setItem('info', JSON.stringify(info))
+      } else {
+        dispatchInfo({ type: "UPDATE_DATA", value: JSON.parse(data) })
+      }
+    }
+  }, []);
+
+
+  // tengo una idea que consiste en guardar los datos de notas como un array con objetos y
+  // dentro de los objetos guardar el año y los datos.
 
 
   return (
-    <View style={styles.container}>
-      <StatusBar hidden={true} />
-      <BtnList menuData={{ menu, setMenu }} />
-      <BtnListPlus modalData={{ modal, setModal }} />
-      <ScrollView>
-      </ScrollView>
-      <TouchableOpacity
-        onPress={() => menu === true ? setMenu(false) : setModal(false)}
-        style={{ ...styles.darkBackground, width: (menu === true || modal === true ? "100%" : 0) }} />
-      {modal === true &&
-        <View style={styles.modal}>
-          <Text style={{
-            alignSelf: 'center'
-            , fontSize: 20, maxWidth: 200, textAlign: 'center'
-          }} >Fecha actual</Text>
-
-
-        </View>
-      }
-      <ScrollView
-        style={{ ...styles.Menu, width: (menu ? "70%" : 0) }}
-      >
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuItemText}>Iniciar Sesión</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuItemText}>Modo</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View >
+    <InfoContext>
+      <View style={{ ...styles.container, backgroundColor: info.background }}>
+        {/* Barra de estado de android */}
+        <StatusBar
+          backgroundColor='#1f1f1f'
+          hidden={false} />
+        {/* botón de menu */}
+        <BtnMenu menuData={{ menu, setMenu }} />
+        {/* botón para agregar nota */}
+        <BtnAddNewNote modalData={setModal} />
+        {/* Caja con todas las notas actuales */}
+        <SafeAreaView style={styles.scrollBox}>
+          {
+            info.notes.length === 0 ? <Text style={{ fontSize: 30, textAlign: 'center', marginTop: "40%" }}>Por ahora no tienes Notas.</Text>
+              :
+              <FlatList
+                data={info.notes}
+                renderItem={({ item }) => <ItemDate element={item} setModal={setModal} />}
+                keyExtractor={item => item.year}
+              />}
+        </SafeAreaView>
+        {/* Menu */}
+        <Menu menuData={{ menu, setMenu }} />
+        {/* Modal */}
+        {modal !== null && <ModalComponent modal={{ modal, setModal }} />}
+      </View >
+    </InfoContext>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollBox: {
+    flex: 1,
+    width: '100%',
+    height: 200,
+    elevation: 10,
+    paddingVertical: "6%"
+  },
   container: {
     flex: 1,
-    backgroundColor: '#2A3869',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden'
   },
-  darkBackground: {
-    width: '100%',
-    height: "100%",
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    backgroundColor: '#00000090',
-  },
-  Menu: {
-    height: '100%',
-    backgroundColor: '#f1f1f1',
-    position: 'absolute',
-    left: 0,
-    paddingTop: 20,
-    display: 'flex',
-    flexDirection: 'column',
-    alignContent: 'center',
-  },
-  menuItem: {
-    width: "92%",
-    height: 60,
-    backgroundColor: "#D9D9D9",
-    display: 'flex',
-    alignContent: 'center',
-    justifyContent: 'center',
-    marginLeft: '4%',
-    margin: 10
-  },
-  menuItemText: {
-    fontSize: 18,
-    maxWidth: 200,
-    marginLeft: 10
-  },
   modal: {
     width: '90%',
     height: "70%",
-    paddingVertical:50,
+    paddingVertical: 50,
     backgroundColor: '#f1f1f1',
     position: 'absolute',
     display: 'flex',
     alignContent: 'center',
+    borderRadius: 10
   }
 });
