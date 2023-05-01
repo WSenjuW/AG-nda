@@ -1,5 +1,5 @@
 # AG-nda 
-AG-nda is a Mobile app (type calendar), it was developed with React Native (EXPO).
+AG-nda is a Android Mobile app (type calendar), it was developed with React Native (EXPO).
 
 
 Next we will attach an image that represents the order of the components:
