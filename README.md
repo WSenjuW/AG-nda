@@ -1,17 +1,17 @@
 # AG-nda 
-AG-nda es una aplicacion mobil para android ( tipo calendario ), fue desarrolada con React-Native ( EXPO ), esta aplicacion fue desarollada con un fin de educativo, para plasmar nuevos conocimientos en un proyecto, por lo tanto no esta demasiado optimizada, intenare sacar otras versiones en un duturo, ahora me gustaria dejar unas aclaraciones imporantes sobre app:
+AG-nda es una aplicacion mobil para android ( tipo calendario ), fue desarrolada con React-Native ( EXPO ), esta aplicacion fue desarollada con un fin de educativo, para plasmar nuevos conocimientos en un proyecto, por lo tanto no esta demasiado optimizada, intenare sacar otras versiones en un futuro, ahora me gustaria dejar unas aclaraciones imporantes sobre app:
 
  - Tiene un almacenamiento local, por lo tanto no se puede guardar los datos de la app y pasar a otro dipositivo.
- - Los temas son solo 2 Light y Dark (en un futuro agregremos la opcion de customizar los temas ).
- - El lenguaje de la app actualmete es español pero el codigo de la app esta en ingles ("sorry").
+ - Los temas solamente son 2 Light y Dark (en un futuro agregremos la opcion de customizar temas ).
+ - El lenguaje de la app actualmete es español pero el codigo de la app esta en ingles ("i'm sorry").
  - Al borrar los datos de la aplicacion seran borrada todas las notas, deberias tenerlo en cuenta.
 
-Por ahora es lo unico que creo que es necesariamente saber antes de descargar la app, Espero que si la utilizas te sirva y cualquier contribucion u opinion siempre sera bien recibida, cualquiera puede usarla sin ningun costo, 
+Por ahora es lo unico que creo que es necesariamente saber antes de descargar la app, Espero que si la utilizas espero que te sea de ultilidad y cualquier contribucion u opinion siempre sera bien recibida, cualquiera puede usarla sin ningun costo, y esta prohibida su venta.
 
 Next we will attach an image that represents the order of the components:
 ![bitmap](https://user-images.githubusercontent.com/93448122/234439807-907695ad-4615-4118-afa7-cc3abb64abb8.png)
 
-## App Componet
+## App
 Este componente tiene una logica simple, solamente renderiza un componente <InfoContext> como padre y el componente <Principal> como hijo.
 
 ## InfoContext
@@ -40,3 +40,9 @@ Para modificar las propiedades del Reducer "Info" en cualquier caso siempre hay 
  ### Almacenamiento de datos
  
  Para guardar los datos usamos ASyncStorage 
+ 
+ ## Principal
+ 
+ Este componente es un poco mas complejo que el  descipto anteriormente, este componte almacena la vista principal de la app
+ 
+ 
