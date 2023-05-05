@@ -54,23 +54,25 @@ Para modificar las propiedades del Reducer "Info" en cualquier caso siempre hay 
  - showMenu( state )
  - info ( context )
  - drawerRef ( reference )
+ 
+ 
 modal: la funcion de este estado es diferenciar la accion a seguir, si crear una nueva nota o si modificar una existente, si es una nota nueva, adquiere el estado 'undefined' , si se edita una nota modal adquiere un objeto con la informacion de una nota.
 	
 showMenu: este estado tiene la funcion simplemente acutualizarse para volver a renderizar el componente con el nuevo tema.
 
 A continuacion explicaremos los elementos que se renderizan en el componente, en orden desendente segun su jerarquia de padre, hijo, etc:
 
-DrawerLayoutAndroid: es el elemento con mayor jeraquia a la hora de renderizar el componente, el mismo es un elemento es nativo de ReactNative y en el mismo se encuentra el manejo del componente Menu de la app.
+  - DrawerLayoutAndroid: es el elemento con mayor jeraquia a la hora de renderizar el componente, el mismo es un elemento es nativo de ReactNative y en el mismo se encuentra el manejo del componente Menu de la app.
 
-View(container): este elemento cumple la funcion de fondo, tambien la funcion de base para el resto de elementos a renderizar.
+  - View(container): este elemento cumple la funcion de fondo, tambien la funcion de base para el resto de elementos a renderizar.
 
-StatusBar: es un componente nativo de reactNative.
+ - StatusBar: es un componente nativo de reactNative.
 
-BtnMenu: este componente tiene la funcion de cambiar el estado "showModal" para que se pueda mostrar el componente Menu( mas abajo hay un apartado en el cual se habla de los botones de la app , este esta incluido).
+  - BtnMenu: este componente tiene la funcion de cambiar el estado "showModal" para que se pueda mostrar el componente Menu( mas abajo hay un apartado en el cual se habla de los botones de la app , este esta incluido).
 
-BtnAddNewNote: este componente se encarga de cambiar el estado modal a "undefined" para que se cree una nota nueva ( mas abajo hay un apartado en el cual se habla de los botones de la app , este esta incluido).
+   - BtnAddNewNote: este componente se encarga de cambiar el estado modal a "undefined" para que se cree una nota nueva ( mas abajo hay un apartado en el cual se habla de los botones de la app , este esta incluido).
 
-SafeAreaView: este componete cumple la funcion de contenedor de las notas de la app, pero tambien la de informar sino hay ninguna nota, por eso dentro del mismo elemento hay un rederizado condicional que varia el resultado renderizado segun la longitud del array con las notas dentro de info.
+  - SafeAreaView: este componete cumple la funcion de contenedor de las notas de la app, pero tambien la de informar sino hay ninguna nota, por eso dentro del mismo elemento hay un rederizado condicional que varia el resultado renderizado segun la longitud del array con las notas dentro de info.
 Dentro del mismo tambien se renderiza el componente ItemDate que es el elemento que representa cada nota.
 
-ModalComponent: en este componente es en el unico que se puede modificar las notas, crear o eliminar, el mismo tenia la funcion de ser un modal por esa razon el mismo esta prensente en un renderizado condicional, si el estado modal tiene algun valor diferente a "null" se renderizara el componente.
+  - ModalComponent: en este componente es en el unico que se puede modificar las notas, crear o eliminar, el mismo tenia la funcion de ser un modal por esa razon el mismo esta prensente en un renderizado condicional, si el estado modal tiene algun valor diferente a "null" se renderizara el componente.
