@@ -60,6 +60,9 @@ modal: la funcion de este estado es diferenciar la accion a seguir, si crear una
 	
 showMenu: este estado tiene la funcion simplemente acutualizarse para volver a renderizar el componente con el nuevo tema.
 
+
+### Estructura retornada
+
 A continuacion explicaremos los elementos que se renderizan en el componente, en orden desendente segun su jerarquia de padre, hijo, etc:
 
   - DrawerLayoutAndroid: es el elemento con mayor jeraquia a la hora de renderizar el componente, el mismo es un elemento es nativo de ReactNative y en el mismo se encuentra el manejo del componente Menu de la app.
@@ -76,3 +79,38 @@ A continuacion explicaremos los elementos que se renderizan en el componente, en
 Dentro del mismo tambien se renderiza el componente ItemDate que es el elemento que representa cada nota.
 
   - ModalComponent: en este componente es en el unico que se puede modificar las notas, crear o eliminar, el mismo tenia la funcion de ser un modal por esa razon el mismo esta prensente en un renderizado condicional, si el estado modal tiene algun valor diferente a "null" se renderizara el componente.
+
+## Menu
+Este es un componente bastante simple, no usamos estados , pero hacemos un llamado al DataContext para poder acceder a la informacion el thema seleccionado actualmente.
+
+### Estructura retornada
+
+A continuacion explicaremos los elementos que se renderizan en el componente, en orden desendente segun su jerarquia de padre, hijo, etc:
+
+- View ( menuBox ) : este elemento funciona como base de componente menu para ubicar el resto de elementos en el componente Menu 
+
+- TouchableOpacity : es un elemento nativo de ReactNative, esta para darle la funcionalidad de click y funcionar a modo de boton personalizado.
+
+- Text: este texto muestra el tema seleccionado actulmente por el usuario.
+
+- Text ( infoDeveloped ) : este texto simplemente es para dar informacion sobre el desarrolador.
+
+## ModalComponent
+
+Este componente tiene 5 estados y una llamada al contextoGlobal. A continucion explicaremos la funciones de cada uno, pero dejaremos de lado a las referencias ya que solamente sirven almacenar valores para las animaciones del Componente( el llamado del use effect tambien es para el inicio de las animaciones apenas se renderice por primera vez el componente en pantalla).
+Este componente al inicializarce tiene una validacion imortante la cual usa para diferenciar si tiene que crear una nueva nota o si tiene que actualizar una ya existente, para esto valida si la propiedad modal proverninete del estado modal del componente Principal ( su padre ) tiene una nota dentro o si tiene valor "undefined" , si es el ultimo caso mensionado procedera a actulizar estados con valores predeterminados para notas nuevas, y en el caso contrario , procedera actualizar algunos estados con la informacion de la nota proventinte de la propiedad modal.
+
+Antes de explicar los estados , me gustaria aclarar como esta estructura de las notas que alamacenamos, las notas son sencillas, son un  objetos con 3 propiedades:
+
+- date : almacena un objeto Date con la fecha de la nota.
+- note: es el texto de la nota en formato de string.
+- id : son una serie de numeros y guiones que funcionan a modo de identificador unico.
+
+### Estados
+
+- idNumber: es el identificador 
+- fecha : objeto Date con la fehca.
+- text : string con la nota.
+- showModal : este componente tiene la funcion de interruptor para mostrar el componente DateTimePicker ( package datetimepicker).
+- mode : sive para cambiar el tipo de DateTimePicker, si queremos cambiar la fecha o si queremnos cambiar solamnete la hora.
+
