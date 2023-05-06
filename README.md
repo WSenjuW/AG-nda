@@ -17,14 +17,14 @@ Next we will attach an image that represents the order of the components:
 ## App
 Este componente tiene una logica simple, solamente renderiza un componente `InfoContext` como padre y el componente `Principal` como hijo.
 
-## InfoContext
+# InfoContext
   
   Este componente maneja una variable que se usa globalmente en toda la aplicación la cual atraves de un useContext se accede a un useReducer que almacena todas la notas de la app y también almacena la ubicación.
  
   - DataContext (useContext)
   - Info (UseReducer)
 
-### Info
+## Info
   
 Es un objeto que tiene 3 propiedades:
   - notes (array con las notas)
@@ -40,13 +40,13 @@ Para modificar las propiedades del Reducer "Info" en cualquier caso siempre hay 
 
  Para modificar el tema, se llama al tipo de acción.
   
- ### Almacenamiento de datos
+ ## Almacenamiento de datos
  
  Para guardar los datos usamos ASyncStorage 
  
  {{{				Contenido Sobre el guardado de datos 				}}}
  
- ## Principal
+ # Principal
  
  Este componente es un poco mas complejo que el anteriormente, este componte almacena la vista principal de la app, En el mismo hay 2 estados y 2 llamados al contexto y una referencia:
  
@@ -61,7 +61,7 @@ modal: la función de este estado es diferenciar la acción a seguir, si crear u
 showMenu: tiene la función de interruptor para volver a renderizar el componente con el nuevo tema.
 
 
-### Estructura retornada
+## return
 
 A continuación explicaremos los elementos que se retornan en el componente, en orden descendente según su jerarquía de padre, hijo, etc:
 
@@ -108,7 +108,7 @@ A continuación explicaremos los elementos que se retornan en el componente, en 
 	
 	
 	
-## ModalComponent
+# ModalComponent
 
 Este componente tiene 5 estados y una llamada al contextoGlobal. A continuación explicaremos la funciones de cada uno, pero dejaremos de lado a las referencias ya que solamente sirven almacenar valores para las animaciones del Componente( el llamado del use effect también es para el inicio de las animaciones apenas se renderice por primera vez el componente en pantalla).
 Este componente al inicializarse tiene una validación importante la cual usa para diferenciar si tiene que crear una nueva nota o si tiene que actualizar una ya existente, para esto valida si la propiedad modal proveniente del estado modal del componente Principal ( su padre ) tiene una nota dentro o si tiene valor "undefined" , si es el ultimo caso mencionado procederá a actualizar estados con valores predeterminados para notas nuevas, y en el caso contrario , procederá actualizar algunos estados con la información de la nota proveniente de la propiedad modal.
@@ -127,7 +127,7 @@ Antes de explicar los estados , me gustaría aclarar como esta estructura de las
 - showModal : este componente tiene la función de interruptor para mostrar el componente DateTimePicker ( package datetimepicker).
 - mode : sirve para cambiar el tipo de DateTimePicker, si queremos cambiar la fecha o si queremos cambiar solamente la hora.
 
-## Estructura Retornada
+## Return
 
 - Animated.View : Es un componente nativo de react Native que hace de base para el resto de elementos en el componente.
 	- `View` ( boxAuxiliar ) : este componente renderiza la función del modal , crear o editar una nota y también un botón para cerrar el modal.
