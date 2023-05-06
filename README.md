@@ -1,5 +1,5 @@
 # AG-nda 
-AG-nda es una aplicacion mobil para android ( tipo calendario ), fue desarrolada con React-Native ( EXPO ), esta aplicacion fue desarollada con un fin de educativo, para plasmar nuevos conocimientos en un proyecto, por lo tanto no esta demasiado optimizada, intenare sacar otras versiones en un futuro, ahora me gustaria dejar unas aclaraciones imporantes sobre app:
+AG-nda es una aplicacion mobil para android ( tipo calendario ), fue desarrollada con React-Native ( EXPO ), esta aplicacion fue desarollada con un fin de educativo, para plasmar nuevos conocimientos en un proyecto, por lo tanto no esta demasiado optimizada, intenare sacar otras versiones en un futuro, ahora me gustaria dejar unas aclaraciones imporantes sobre app:
 
  - Tiene un almacenamiento local, por lo tanto no se puede guardar los datos de la app y pasar a otro dipositivo.
  - Los temas solamente son 2 Light y Dark (en un futuro agregremos la opcion de customizar temas ).
@@ -14,17 +14,17 @@ Por ahora es lo unico que creo que es necesariamente saber antes de descargar la
 Next we will attach an image that represents the order of the components:
 ![bitmap](https://user-images.githubusercontent.com/93448122/234439807-907695ad-4615-4118-afa7-cc3abb64abb8.png)
 
-## App
+# App
 Este componente tiene una logica simple, solamente renderiza un componente <InfoContext> como padre y el componente <Principal> como hijo.
 
-## InfoContext
+# InfoContext
   
   Este componente maneja una variable que se usa globalmente en toda la aplicacion la cual atravez de un useContext se accede a un useReducer que almacena todas la notas de la app y tambien almacena la ubicacion.
  
   - DataContext (useContext)
   - Info (UseReducer)
 
-### Info
+## Info
   
 Es un objeto que tiene 3 propiedades:
   - notes (array con las notas)
@@ -40,13 +40,13 @@ Para modificar las propiedades del Reducer "Info" en cualquier caso siempre hay 
 
  Para modificar el tema simplente se llama al tipo de accion.
   
- ### Almacenamiento de datos
+ ## Almacenamiento de datos
  
  Para guardar los datos usamos ASyncStorage 
  
  {{{				Contenido Sobre el guardado de datos 				}}}
  
- ## Principal
+ # Principal
  
  Este componente es un poco mas complejo que el  descipto anteriormente, este componte almacena la vista principal de la app, En el mismo hay 2 estados y 2 llamados al contexto y una referencia:
  
@@ -61,7 +61,7 @@ modal: la funcion de este estado es diferenciar la accion a seguir, si crear una
 showMenu: este estado tiene la funcion simplemente acutualizarse para volver a renderizar el componente con el nuevo tema.
 
 
-### Estructura retornada
+## return
 
 A continuacion explicaremos los elementos que se renderizan en el componente, en orden desendente segun su jerarquia de padre, hijo, etc:
 
@@ -87,7 +87,7 @@ Dentro del mismo tambien se renderiza el componente ItemDate que es el elemento 
 	
 	
 	
-## Menu
+# Menu
 Este es un componente bastante simple, no usamos estados , pero hacemos un llamado al DataContext para poder acceder a la informacion el thema seleccionado actualmente.
 
 ### Estructura retornada
@@ -108,7 +108,7 @@ A continuacion explicaremos los elementos que se renderizan en el componente, en
 	
 	
 	
-## ModalComponent
+# ModalComponent
 
 Este componente tiene 5 estados y una llamada al contextoGlobal. A continucion explicaremos la funciones de cada uno, pero dejaremos de lado a las referencias ya que solamente sirven almacenar valores para las animaciones del Componente( el llamado del use effect tambien es para el inicio de las animaciones apenas se renderice por primera vez el componente en pantalla).
 Este componente al inicializarce tiene una validacion imortante la cual usa para diferenciar si tiene que crear una nueva nota o si tiene que actualizar una ya existente, para esto valida si la propiedad modal proverninete del estado modal del componente Principal ( su padre ) tiene una nota dentro o si tiene valor "undefined" , si es el ultimo caso mensionado procedera a actulizar estados con valores predeterminados para notas nuevas, y en el caso contrario , procedera actualizar algunos estados con la informacion de la nota proventinte de la propiedad modal.
@@ -127,7 +127,7 @@ Antes de explicar los estados , me gustaria aclarar como esta estructura de las 
 - showModal : este componente tiene la funcion de interruptor para mostrar el componente DateTimePicker ( package datetimepicker).
 - mode : sive para cambiar el tipo de DateTimePicker, si queremos cambiar la fecha o si queremnos cambiar solamnete la hora.
 
-## Estructura Retornada
+## Return
 
 - Animated.View : Es un componente nativo de react Native que hace de base para el resto de elementos en el componente.
 	- `View` ( boxAuxiliar ) : este componente renderiza la funcion del modal , crear o editar una nota y tambien un boton para cerrar el modal.
