@@ -1,111 +1,73 @@
-import { BlurView } from "expo-blur";
 import { useContext } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
-import { DataContext } from "../App";
+import { DataContext } from "./InfoContext";
 
 
-export default function Menu(props) {
+export default function Menu({ SSM, SM }) {
     const { dispatch, info } = useContext(DataContext);
+    const { themeList, themeIndex } = useContext(DataContext).info;
+
 
     return (
-        <BlurView
-            intensity={100}
-            tint="dark"
-            style={{ ...styles.boxMenuBlur, width: (props.menuData.menu ? "100%" : 0) }}
-        >
-            <View style={info.theme == 'light' ? styles.menuBoxLight : styles.menuBoxDark}>
-                <TouchableOpacity style={info.theme == 'light' ? styles.menuItemLight : styles.menuItemDark}
-                    onPress={() => dispatch({
-                        type: "CHANGE_THEME",
-                        value: (info.theme === 'light' ? 'dark' : 'light')
-                    })}
-                >
-                    <Text style={info.theme == 'light' ? styles.menuItemTextLight : styles.menuItemTextDark}>Tema {info.theme[0].toUpperCase() + info.theme.substring(1)}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={info.theme == 'light' ? styles.menuItemLight : styles.menuItemDark}
-                >
-                    <Text style={info.theme == 'light' ? styles.menuItemTextLight : styles.menuItemTextDark}>Color de Fondo</Text>
-                </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-                onPress={() => props.menuData.menu === true ? props.menuData.setMenu(false) : props.menuData.setModal(false)}
-                style={styles.zoneBlur}
-            />
-        </BlurView>
+        <View style={{ ...styles.menuBox, backgroundColor: themeList[themeIndex].menuBackground }}>
+            <TouchableOpacity style={{
+                ...styles.menuItem,
+                borderColor: themeList[themeIndex].menuItemColor
+            }}
+                onPress={() => {
+                    dispatch({ type: "CHANGE_THEME" });
+                    SSM(!SM)
+                }}
+            >
+                <Text style={{
+                    ...styles.menuItemText,
+                    backgroundColor: (themeList[themeIndex].menuItemBackground),
+                    color: themeList[themeIndex].menuItemColor
+                }}
+                >Tema {themeList[themeIndex].themeTitle[0].toUpperCase() + themeList[themeIndex].themeTitle.substring(1)}</Text>
+            </TouchableOpacity>
+            <Text style={{ ...styles.infoDeveloped, color: themeList[themeIndex].menuItemColor }}>Developed by WSenjuW</Text>
+        </View>
     )
 }
 
 
 const styles = StyleSheet.create({
-
-    boxMenuBlur: {
-        position: 'absolute',
+    infoDeveloped: {
+        position: "absolute",
+        bottom: 40,
+        alignSelf: 'center',
+        fontSize: 16
+    },
+    menuBox: {
         width: '100%',
-        height: "100%",
-        zIndex: 101,
-        display: 'flex',
-        flexDirection: 'row',
-        overflow: 'hidden',
-        left: 0,
-        top: 0
-    },
-    menuBoxLight: {
-        backgroundColor: '#f1f1f1',
-        width: '70%',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        paddingVertical: 50
+        paddingVertical: 50,
+        overflow: 'hidden'
     },
-    menuBoxDark: {
-        backgroundColor: '#1f1f1f',
-        width: '70%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        paddingVertical: 50
-    },
-    zoneBlur: {
+    menuBlur: {
         width: '30%',
         height: '100%'
+    },
+    zoneBlur: {
+        width: '100%',
+        height: '100%',
 
     },
-    menuItemLight: {
-        backgroundColor: '#DDDDDD',
-        width: "92%",
-        height: 60,
-        alignSelf: 'center',
-        borderLeftWidth: 4,
-        marginBottom: 30
-    },
-    menuItemDark: {
-        backgroundColor: '#3d3d3d',
+    menuItem: {
         width: "92%",
         height: 60,
         alignSelf: 'center',
         borderLeftWidth: 4,
         marginBottom: 30,
-        borderLeftColor: '#ffffff',
     },
-    infoDeveloped: {
-        bottom: 0,
-        width: "100%",
-        textAlign: 'center'
-    },
-    menuItemTextLight: {
+    menuItemText: {
         width: '100%',
+        minWidth: 200,
         height: "100%",
         textAlignVertical: 'center',
-        fontSize: 18,
-        paddingLeft: 8,
-        letterSpacing: 2,
-    },
-    menuItemTextDark: {
-        width: '100%',
-        height: "100%",
-        textAlignVertical: 'center',
-        color: 'white',
         fontSize: 18,
         paddingLeft: 8,
         letterSpacing: 2,

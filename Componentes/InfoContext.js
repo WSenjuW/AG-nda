@@ -1,21 +1,55 @@
-import { useState, useEffect, useReducer, createContext } from 'react';
+import { useEffect, useReducer, createContext } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const initialState = {
-    theme: 'light',
-    background: '#f1f1f1',
     notes: [],
+    themeIndex: 0,
+    themeList: [
+        {
+            themeTitle: 'light',
+            background: '#f1f1f1',
+            textColor: "#000",
+            btnBackground: '#bfbfbf',
+            btnColor: '#000',
+            menuBackground: '#f1f1f1',
+            menuItemBackground: '#DDDDDD',
+            menuItemColor: '#000',
+            itemListBackground: '#FFD966',
+            itemListColor: "#000"
+        },
+        {
+            themeTitle: 'dark',
+            background: '#1f1f1f',
+            textColor: "#fff",
+            btnBackground: '#383838',
+            btnColor: '#fff',
+            menuBackground: '#1f1f1f',
+            menuItemBackground: '#363636',
+            menuItemColor: '#fff',
+            itemListBackground: '#0E8388',
+            itemListColor: "#000"
+        }
+    ]
+
 }
 
-
 const reducer = (state, action) => {
-
     switch (action.type) {
-        case "CHANGE_THEME": return { ...state, theme: action.value }
-            break;
-        case "CHANGE_BACKGROUND": return { ...state, background: action.value }
+        case "CHANGE_THEME": {
+            if (state.themeList.length !== 1) {
+                if (state.themeIndex >= state.themeList.length - 1) { state.themeIndex = 0 }
+                else { state.themeIndex = state.themeIndex + 1 }
+            }
+            return state
+        }
             break;
         case "UPDATE_DATA": {
+            state = action.value;
+            return state;
+        };
+            break;
+        case "UPDATE_NOTE": {
             const year = action.item.item['date'].getFullYear();
             const month = action.item.item['date'].getMonth();
             let yearOldItem = action.item.oldItem.date.getFullYear().toString();
@@ -32,7 +66,6 @@ const reducer = (state, action) => {
                 }
             }
 
-
             const indexYear = state.notes.findIndex(e => e.year === year);
             if (indexYear === -1)
                 state['notes'].push({ year: year, NLY: [{ month: month, NLM: [action.item.item] }] })
@@ -45,7 +78,6 @@ const reducer = (state, action) => {
                     else state.notes[indexItem].NLY[indexMonth].NLM.push(action.item.item);
                 }
             }
-
             return state
         }
             break;
@@ -63,7 +95,6 @@ const reducer = (state, action) => {
                 if (indexMonth === -1) state.notes[indexYear].NLY.push({ month: month, NLM: [action.item.item] })
                 else state.notes[indexYear].NLY[indexMonth].NLM.push(action.item.item);
             }
-
             return state
         }
             break;
@@ -93,21 +124,25 @@ const DataContext = createContext();
 function InfoContext({ children }) {
     const [info, dispatchInfo] = useReducer(reducer, initialState)
 
+
     useEffect(() => {
-        const FunctionInfo = async () => {
-            if (initialState !== info) {
-                await AsyncStorage.setItem('info', JSON.stringify(info));
-            }
+        async function updateInfo() {
+            let data = await AsyncStorage.getItem('info');
+            if (data !== null) { dispatchInfo({ type: "UPDATE_DATA", value: JSON.parse(data) }) }
+            else { AsyncStorage.setItem('info', JSON.stringify(info)) }
         }
-        FunctionInfo()
-    }, [info]);
+        // updateInfo()
+    }, []);
+
+    // useEffect(() => {
+    //     if (info !== initialState) AsyncStorage.setItem('info', JSON.stringify(info))
+    // }, [info]);
 
     return (
         <DataContext.Provider value={{ info: info, dispatch: dispatchInfo }}>
-            { children }
+            {children}
         </DataContext.Provider>
     )
 }
-
 
 export { DataContext, InfoContext }

@@ -1,37 +1,41 @@
 import { useContext } from "react";
 import { StyleSheet, TouchableOpacity, View, Text, FlatList } from "react-native";
-import { DataContext } from "../App";
+import { DataContext } from "./InfoContext";
 
 
 let meses = [
-    'Enero', 'Febrero', 'Marzo', 'Abril',
-    'Mayo', 'Junio', 'Julio', 'Agosto',
-    'Septiembre', 'Octubre', 'Noviembre',
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
     'Diciembre',
 ]
 
-export default function ItemDate(props) {
-    let { info } = useContext(DataContext)
+export default function ItemDate({ element, setModal }) {
+    let { theme, themeList, themeIndex } = useContext(DataContext).info
 
     return (
         <View style={styles.contentBox}>
             <FlatList
-                data={props.element.NLY}
+                data={element.NLY}
                 renderItem={({ item }) =>
                     <View style={styles.boxContent}>
-                        <Text style={ info.theme === 'light' ? styles.textMonthLight : styles.textMonthDark}>{meses[item.month] + " - " + props.element.year}</Text>
+                        <Text style={{
+                            ...styles.textMonth,
+                            color: themeList[themeIndex].textColor,
+                            borderBottomColor: themeList[themeIndex].textColor
+                        }}
+                        >{meses[item.month] + " - " + element.year}</Text>
                         <FlatList
                             data={item.NLM}
-                            renderItem={({ item }) =>
-                                <TouchableOpacity onPress={() => props.setModal(item)} style={styles.contentItem}>
-                                    <View style={styles.boxDay}>
-                                        <Text style={styles.textBoxDay} >{item.date.getDate().toString()}</Text>
-                                    </View>
-                                    <View style={styles.boxMsg}>
-                                        <Text style={styles.textBoxMsg}>{item.note}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            }
+                            renderItem={({ item }) => <ItemList theme={theme} element={item} SM={setModal} />}
                             keyExtractor={item => item.id}
                         />
                     </View>
@@ -41,6 +45,24 @@ export default function ItemDate(props) {
         </View>
     )
 }
+
+
+function ItemList({ element, SM }) {
+    let { theme, themeList, themeIndex } = useContext(DataContext).info
+
+    return (
+        <TouchableOpacity onPress={() => SM(element)} style={{ ...styles.contentItem, backgroundColor: themeList[themeIndex].itemListBackground }}>
+            <View style={styles.boxDay}>
+                <Text style={styles.textBoxDay} >{element.date.getDate().toString()}</Text>
+            </View>
+            <View style={styles.boxMsg}>
+                <Text style={{ ...styles.textBoxMsg, color: themeList[themeIndex].itemListColor }}>{element.note}</Text>
+            </View>
+        </TouchableOpacity>
+
+    )
+}
+
 
 
 
@@ -58,28 +80,17 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
     },
-    textMonthLight: {
+    textMonth: {
         width: '94%',
         alignSelf: 'center',
         marginTop: 15,
         height: 40,
         textAlignVertical: 'center',
         borderBottomWidth: 2,
-        borderBottomColor: '#000',
         fontSize: 22,
         color: "#000"
     },
-    textMonthDark: {
-        width: '94%',
-        alignSelf: 'center',
-        marginTop: 15,
-        height: 40,
-        textAlignVertical: 'center',
-        borderBottomWidth: 2,
-        borderBottomColor: '#fff',
-        fontSize: 22,
-        color: "#fff"
-    },
+
     contentItem: {
         width: '94%',
         height: 120,
@@ -89,7 +100,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         display: 'flex',
         flexDirection: "row",
-
     },
     boxDay: {
         width: 100,
@@ -101,8 +111,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         backgroundColor: '#fff',
-        borderRadius: 10
-
+        borderRadius: 8,
     },
     textBoxDay: {
         width: '100%',

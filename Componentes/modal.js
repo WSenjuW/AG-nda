@@ -1,178 +1,196 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { StyleSheet, View, Text, TouchableOpacity, TextInput } from 'react-native';
-import { useContext, useState, useEffect } from 'react';
-import { BtnAddNoteModal, BtnRemoveNoteModal } from './Btns.js';
-import { DataContext } from '../App';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Animated } from 'react-native';
+import { useContext, useState, useEffect, useRef } from 'react';
+import { BtnAddNoteModal, BtnRemoveNoteModal } from './Btns';
+import { DataContext } from './InfoContext';
 import { v4 as uuidv4 } from 'uuid';
 
-export function ModalComponent(props) {
+export function ModalComponent({ modal }) {
     const [idNumber, setIdNumber] = useState(null);
     const [fecha, setFecha] = useState(new Date());
     const [text, setText] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [mode, setMode] = useState('date');
-    const { info, dispatch } = useContext(DataContext);
-
+    const { dispatch } = useContext(DataContext);
+    const contentOpacityRef = useRef(new Animated.Value(0)).current;
+    const modalBoxScaleRef = useRef(new Animated.Value(0.2)).current;
+    const modalBoxTranslationRef = useRef(new Animated.Value(4000)).current;
 
 
     useEffect(() => {
-        if (props.modal.modal === undefined) {
+        if (modal.modal === undefined) {
             setIdNumber(uuidv4());
+            fecha.setHours(12);
+            fecha.setMinutes(0);
         } else {
-            setIdNumber(props.modal.modal.id);
-            setFecha(props.modal.modal.date);
-            setText(props.modal.modal.note)
+            setIdNumber(modal.modal.id);
+            setFecha(modal.modal.date);
+            setText(modal.modal.note)
         }
+    }, []);
+
+    // el siguiente useEfect es para activar las animaciones
+    useEffect(() => {
+        Animated.timing(modalBoxScaleRef, { toValue: 1, duration: 300, delay: 200, useNativeDriver: true }).start()
+        Animated.timing(modalBoxTranslationRef, { toValue: 0, duration: 300, useNativeDriver: true }).start()
+        Animated.timing(contentOpacityRef, { toValue: 1, duration: 400, delay: 600, useNativeDriver: true }).start()
     }, []);
 
 
 
-    function ModalPress(e) {
-        setMode(e);
-        setShowModal(true);
-    }
+    function ModalPress(e) { setMode(e); setShowModal(true) }
 
     function sendInfo() {
         let item = {
             date: fecha,
-            note: text,
+            note: text.trim(),
             id: idNumber
         }
-
-        let modalOk = props.modal.modal;
         dispatch({
-            type: (modalOk === undefined ? "ADD_NOTE" : "UPDATE_DATA"),
-            item: { item: item, oldItem: props.modal.modal }
+            type: (modal.modal === undefined ? "ADD_NOTE" : "UPDATE_NOTE"),
+            item: { item: item, oldItem: modal.modal }
         });
-        props.modal.setModal(null);
+        modal.setModal(null);
     }
 
     function removeInfo() {
-        dispatch({ type: 'REMOVE_NOTE', item: { item: props.modal.modal, oldItem: undefined } })
-        props.modal.setModal(null);
+        dispatch({ type: 'REMOVE_NOTE', item: { item: modal.modal, oldItem: undefined } })
+        modal.setModal(null);
     }
 
-
+    const { themeList, themeIndex } = useContext(DataContext).info;
 
     return (
-        <View style={info.theme === "light" ? styles.modalLight : styles.modalDark} >
-            <Text style={info.theme === 'light' ? styles.infoTextLight : styles.infoTextDark }>
-                {props.modal.modal === undefined ? "Nota nueva" : "Editar nota"}</Text>
-            <View style={styles.BoxHoraFecha}>
-                <TouchableOpacity style={styles.Fecha} onPress={() => ModalPress('date')}>
-                    <Text style={info.theme == "light" ? styles.horaFechaTitle : styles.horaFechaTitleDark}>Fecha</Text>
-                    <Text style={info.theme == "light" ? styles.horaFechaTextLight : styles.horaFechaTextDark}
-                    >{fecha.getDate() + " / " + (fecha.getMonth() + 1) + ' / ' + fecha.getFullYear()}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.Hora} onPress={() => ModalPress('time')} >
-                    <Text style={info.theme == "light" ? styles.horaFechaTitle : styles.horaFechaTitleDark}>Hora</Text>
-                    <Text style={info.theme == "light" ? styles.horaFechaTextLight : styles.horaFechaTextDark}
-                    >{fecha.getHours() + ":" + fecha.getMinutes()}</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.BoxAsuntos}>
-                <Text style={info.theme == "light" ? styles.horaFechaTitle : styles.horaFechaTitleDark}>Asunto</Text>
-                <TextInput
-                    defaultValue={text}
-                    style={info.theme === "light" ? styles.asuntoLight : styles.asuntoDark}
-                    multiline={true}
-                    onChange={e => { setText(e.nativeEvent.text) }}
-                    autoCapitalize='sentences'
-                    cursorColor={info.theme === 'light' ? '#000' : '#fff'}
-                    inputMode='text'
-                    maxLength={500}
-                />
-            </View>
-            <View style={styles.btnBox}>
-                {props.modal.modal !== undefined && <BtnRemoveNoteModal RI={removeInfo} />}
-                <BtnAddNoteModal SI={sendInfo} showModal={text !== "" ? false : true} />
-            </View>
-            {showModal
-                &&
-                <DateTimePicker
-                    value={fecha}
-                    mode={mode}
-                    minimumDate={new Date()}
-                    is24Hour={true}
-                    onChange={(e, selectedData) => { setFecha(selectedData); setShowModal(false) }}
-                />}
-            <TouchableOpacity
-                style={info.theme === "light" ? styles.btnCloseLight : styles.btnCloseDark}
-                onPress={() => props.modal.setModal(null)}
-            >
-                <Text style={info.theme === 'light' ? styles.textBtnCloseLight : styles.textBtnCloseDark}>X</Text>
-            </TouchableOpacity>
-        </View>
+        <Animated.View ref={[modalBoxScaleRef, modalBoxTranslationRef]} style={{
+            ...styles.boxBackground,
+            backgroundColor: themeList[themeIndex].background,
+            transform: [
+                { scale: modalBoxScaleRef },
+                { translateY: modalBoxTranslationRef }
+            ],
+        }}>
+            <Animated.View ref={contentOpacityRef} style={{ ...styles.modal, opacity: contentOpacityRef }} >
+                <View style={styles.boxAuxiliar}>
+                    <Text
+                        style={{ ...styles.infoText, color: themeList[themeIndex].textColor }}
+                    >
+                        {modal.modal === undefined ? "Nota nueva" : "Editar nota"}
+                    </Text>
+                    <TouchableOpacity
+                        style={{ ...styles.btnClose, backgroundColor: themeList[themeIndex].btnBackground }}
+                        onPress={() => modal.setModal(null)}
+                    >
+                        <Text style={{ ...styles.textBtnClose, color: themeList[themeIndex].btnColor }}>X</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.BoxHoraFecha}>
+                    <TouchableOpacity style={{ ...styles.Fecha }} onPress={() => ModalPress('date')}>
+                        <Text style={{
+                            ...styles.horaFechaTitle,
+                            color: themeList[themeIndex].textColor
+                        }}>Fecha</Text>
+                        <Text style={{
+                            ...styles.horaFechaText,
+                            color: themeList[themeIndex].textColor,
+                            backgroundColor: themeList[themeIndex].menuItemBackground,
+                            borderBottomColor: themeList[themeIndex].textColor
+                        }}
+                        >{fecha.getDate() + " / " + (fecha.getMonth() + 1) + ' / ' + fecha.getFullYear()}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.Hora} onPress={() => ModalPress('time')} >
+                        <Text style={{ ...styles.horaFechaTitle, color: themeList[themeIndex].textColor }}>Hora</Text>
+                        <Text style={{
+                            ...styles.horaFechaText,
+                            color: themeList[themeIndex].textColor,
+                            backgroundColor: themeList[themeIndex].menuItemBackground,
+                            borderBottomColor: themeList[themeIndex].textColor
+                        }}
+                        >{(fecha.getHours().toString().length === 1 ? ('0' + fecha.getHours()) : fecha.getHours())
+                            + " : " +
+                            (fecha.getMinutes().toString().length === 1 ? ("0" + fecha.getMinutes()) : fecha.getMinutes())}</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.BoxAsuntos}>
+                    <Text style={{
+                        ...styles.horaFechaTitle,
+                        color: themeList[themeIndex].textColor
+                    }}>Asunto</Text>
+                    <TextInput
+                        defaultValue={text}
+                        style={{
+                            ...styles.asunto,
+                            backgroundColor: themeList[themeIndex].menuItemBackground,
+                            borderBottomColor: themeList[themeIndex].textColor,
+                            color: themeList[themeIndex].textColor
+                        }}
+                        multiline={true}
+                        onChange={e => { setText(e.nativeEvent.text) }}
+                        autoCapitalize='sentences'
+                        cursorColor={themeList[themeIndex].textColor}
+                        inputMode='text'
+                        maxLength={500}
+                    />
+                </View>
+                <View style={styles.btnBox}>
+                    {modal.modal !== undefined && <BtnRemoveNoteModal RI={removeInfo} />}
+                    <BtnAddNoteModal SI={sendInfo} showModal={text !== "" ? false : true} />
+                </View>
+                {showModal
+                    &&
+                    <DateTimePicker
+                        value={fecha}
+                        mode={mode}
+                        minimumDate={new Date()}
+                        is24Hour={true}
+                        onChange={(e, selectedData) => { setFecha(selectedData); setShowModal(false) }}
+                    />}
+            </Animated.View>
+        </Animated.View>
     )
 }
 
 const styles = StyleSheet.create({
-    infoTextLight: {
-        fontSize:34,
-        position: 'absolute',
-        top: 30,
-        left: 40,
+    boxBackground: {
+        height: "100%",
+        width: '100%',
+        zIndex: 101,
+        position: "absolute",
+        top: 0,
+        paddingBottom: 140,
+        overflow: 'hidden'
+    },
+    modal: {
+        width: '100%',
+        height: "100%",
+        display: 'flex',
+        zIndex: 101,
+    },
+    boxAuxiliar: {
+        width: "86%",
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        marginTop: 40,
+        marginBottom: 80
+    },
+    infoText: {
+        fontSize: 34,
+        width: 260,
         color: '#000'
     },
-    infoTextDark: {
-        fontSize:34,
-        position: 'absolute',
-        top: 30,
-        left: 40,
-        color: '#fff',
-    },
-    btnCloseLight: {
+    btnClose: {
         width: 80,
         height: 45,
         backgroundColor: '#C0C2C8',
-        position: 'absolute',
-        top: 30,
-        right: 38,
         borderRadius: 5,
-
     },
-    btnCloseDark: {
-        width: 80,
-        height: 45,
-        backgroundColor: '#404040',
-        position: 'absolute',
-        top: 30,
-        right: 38,
-        borderRadius: 5,
-
-    },
-    textBtnCloseLight: {
+    textBtnClose: {
         width: '100%',
         height: '100%',
         textAlign: 'center',
         textAlignVertical: 'center',
         fontSize: 25
-    },
-    textBtnCloseDark: {
-        width: '100%',
-        height: '100%',
-        textAlign: 'center',
-        textAlignVertical: 'center',
-        fontSize: 25,
-        color: '#fff'
-    },
-    modalLight: {
-        width: '100%',
-        height: "100%",
-        paddingVertical: "22%",
-        backgroundColor: '#f1f1f1',
-        position: 'absolute',
-        display: 'flex',
-        zIndex: 101,
-    },
-    modalDark: {
-        width: '100%',
-        height: "100%",
-        paddingVertical: "22%",
-        backgroundColor: '#1f1f1f',
-        position: 'absolute',
-        display: 'flex',
-        zIndex: 101,
     },
     BoxHoraFecha: {
         width: '86%',
@@ -187,8 +205,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         display: 'flex',
         flexDirection: 'column'
-    }
-    ,
+    },
     Hora: {
         width: 180,
         height: '100%',
@@ -198,7 +215,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column'
     },
-    horaFechaTextLight: {
+    horaFechaText: {
         width: '100%',
         height: 40,
         fontSize: 22,
@@ -208,38 +225,20 @@ const styles = StyleSheet.create({
         borderBottomWidth: 3,
         textAlignVertical: 'bottom'
     },
-    horaFechaTextDark: {
-        width: '100%',
-        height: 40,
-        fontSize: 22,
-        paddingBottom: 5,
-        backgroundColor: '#404040',
-        textAlign: 'center',
-        borderBottomWidth: 3,
-        textAlignVertical: 'bottom',
-        borderBottomColor: '#fff',
-        color: '#fff'
-    },
-    horaFechaTitleLight: {
+    horaFechaTitle: {
         fontSize: 16,
         marginLeft: 5,
         marginBottom: 5,
-    },
-    horaFechaTitleDark: {
-        fontSize: 16,
-        marginLeft: 5,
-        marginBottom: 5,
-        color: '#fff'
     },
     BoxAsuntos: {
         width: "86%",
         height: '50%',
-        marginVertical: 40,
+        marginVertical: 50,
         alignSelf: 'center',
         display: 'flex',
         flexDirection: 'column',
     },
-    asuntoLight: {
+    asunto: {
         width: '100%',
         height: '100%',
         padding: 20,
@@ -250,24 +249,13 @@ const styles = StyleSheet.create({
         borderBottomWidth: 4,
         color: '#000'
     },
-    asuntoDark: {
-        width: '100%',
-        height: '100%',
-        padding: 20,
-        backgroundColor: '#404040',
-        textAlignVertical: 'top',
-        fontSize: 20,
-        borderRadius: 3,
-        borderBottomWidth: 4,
-        borderBottomColor: '#fff',
-        color: '#fff'
-    },
     btnBox: {
         width: '86%',
+        height: 80,
         alignSelf: 'center',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginVertical: 40
+        marginTop: 40
     },
 });

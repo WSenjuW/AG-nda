@@ -1,18 +1,19 @@
 import * as React from "react"
 import { useContext } from "react"
-
 import Svg, { Path } from "react-native-svg"
 import { View, TouchableOpacity } from 'react-native';
-import { DataContext } from "../App";
+import { DataContext } from "./InfoContext";
 
 
-function BtnMenu(props) {
-  let { info } = React.useContext(DataContext);
+
+
+function BtnMenu({ OP }) {
+  let { themeList, themeIndex } = useContext(DataContext).info;
 
   return (<TouchableOpacity
-    onPress={() => props.menuData.menu === true ? props.menuData.setMenu(false) : props.menuData.setMenu(true)}
+    onPress={() => OP.current.openDrawer() }
     style={{
-      backgroundColor: (info.theme !== 'light' ? '#363636' : '#f1f1f1'),
+      backgroundColor: (themeList[themeIndex].btnBackground),
       width: 90,
       height: 90,
       borderRadius: 100,
@@ -34,8 +35,7 @@ function BtnMenu(props) {
         viewBox="0 -9 12 22"
         width={60}
         height={60}
-        fill={info.theme !== 'light' ? '#fff' : '#000'}
-        {...props}
+        fill={themeList[themeIndex].textColor}
       >
         <Path
           fillRule="evenodd"
@@ -61,8 +61,14 @@ const BtnAddNoteModal = (props) => {
       onPress={props.SI}
     >
       <Svg
-        xmlns="http://www.w3.org/2000/svg" viewBox="-8 1 32 7" width={70}
-        height={60} fill="#000" className="bi bi-journal-plus" alignSelf="center" >
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="-8 1 32 7"
+        width={70}
+        height={60} 
+        fill="#000"
+        className="bi bi-journal-plus"
+        alignSelf="center"
+         >
         <Path fillRule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z" />
         <Path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z" />
         <Path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z" />
@@ -82,11 +88,24 @@ const BtnRemoveNoteModal = (props) => {
         backgroundColor: '#e63939',
         borderRadius: 5,
         alignSelf: 'center',
-
       }}
     >
-
-
+      <Svg
+        viewBox="-8 1 32 7"
+        xmlns="http://www.w3.org/2000/svg"
+        width={70}
+        height={60}
+        fill="#000"
+        className="bi bi-journal-minus"
+        alignSelf="center"
+      >
+        <Path
+          fillRule="evenodd"
+          d="M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5z"
+        />
+        <Path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z" />
+        <Path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z" />
+      </Svg>
     </TouchableOpacity>
   )
 
@@ -94,8 +113,7 @@ const BtnRemoveNoteModal = (props) => {
 
 
 function BtnAddNewNote(props) {
-  let { info } = useContext(DataContext);
-
+  let { themeList, themeIndex } = useContext(DataContext).info;
 
   return (
     <TouchableOpacity
@@ -108,9 +126,8 @@ function BtnAddNewNote(props) {
         bottom: 30,
         right: 30,
         zIndex: 50,
-        backgroundColor: (info.theme !== 'light' ? '#363636' : '#f1f1f1'),
+        backgroundColor: (themeList[themeIndex].btnBackground),
         borderRadius: 100,
-
       }}>
       <Svg
         xmlns="http://www.w3.org/2000/svg"
@@ -118,8 +135,7 @@ function BtnAddNewNote(props) {
         viewBox="-8 0.3 32 10"
         width={70}
         height={60}
-        fill={info.theme !== 'light' ? '#fff' : '#000'}
-
+        fill={themeList[themeIndex].textColor}
         {...props}
       >
         <Path fillRule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z" />
@@ -131,7 +147,5 @@ function BtnAddNewNote(props) {
   )
 
 }
-
-
 
 export { BtnMenu, BtnAddNewNote, BtnAddNoteModal, BtnRemoveNoteModal };
