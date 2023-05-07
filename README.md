@@ -14,7 +14,7 @@ For now I think this is the only thing you need to know before downloading the a
 Next we will attach an image that represents the order of the components:
 ![bitmap](https://user-images.githubusercontent.com/93448122/234439807-907695ad-4615-4118-afa7-cc3abb64abb8.png)
 
-## App
+# App
 This component has a simple logic, it only renders an 'InfoContext' component as a parent and the `Principal` component as a child.
 
 
