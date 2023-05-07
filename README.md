@@ -112,7 +112,7 @@ Before explaining the states, I would like to clarify how this structure of the 
 - note: It is the text of the note in string format.
 - id : They are a series of numbers and dashes that function as a unique identifier.
 
-### Estados
+### States
 
 - idNumber: it is the ID 
 - fecha : object Date with the date.
