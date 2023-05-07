@@ -85,7 +85,7 @@ Next we will explain the elements that will be returned in the component, in des
 ## Menu
 This is a fairly simple component, we do not use states, but we make a call to the DataContext to be able to access the information the currently selected theme.
 
-### Estructura retornada
+### Return
 Next we will explain the elements that will be returned in the component, in descending order according to their hierarchy of parent, child, etc:
 	
 - `View`(menuBox):This element works as a menu component base to locate the rest of the elements in the `Menu` component.
