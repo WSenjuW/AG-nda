@@ -1,9 +1,12 @@
-import { useEffect, useReducer, createContext } from 'react';
+import { useEffect, useReducer, createContext, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
+
 const initialState = {
-    notes: [],
+    notes: {},
+    languageList: ['es', 'en'],
+    languageIndex: 0,
     themeIndex: 0,
     themeList: [
         {
@@ -31,87 +34,77 @@ const initialState = {
             itemListColor: "#000"
         }
     ]
-
 }
 
 const reducer = (state, action) => {
     switch (action.type) {
+        case "CHANGE_LANGUAGE": {
+            if (state.languageIndex >= state.languageList.length - 1) { state.languageIndex = 0 }
+            else { state.languageIndex = state.languageIndex + 1 }
+            return state
+        }
+            break;
         case "CHANGE_THEME": {
-            if (state.themeList.length !== 1) {
-                if (state.themeIndex >= state.themeList.length - 1) { state.themeIndex = 0 }
-                else { state.themeIndex = state.themeIndex + 1 }
-            }
+            if (state.themeIndex >= state.themeList.length - 1) { state.themeIndex = 0 }
+            else { state.themeIndex = state.themeIndex + 1 }
             return state
         }
             break;
         case "UPDATE_DATA": {
-            state = action.value;
-            return state;
-        };
+            const infoStringify = JSON.parse(action.info);
+            return state = infoStringify;
+        }
             break;
         case "UPDATE_NOTE": {
-            const year = action.item.item['date'].getFullYear();
-            const month = action.item.item['date'].getMonth();
-            let yearOldItem = action.item.oldItem.date.getFullYear().toString();
-            let monthOldItem = action.item.oldItem.date.getMonth();
+            const year = new Date(action.item.item['date']).getFullYear();
+            const month = new Date(action.item.item['date']).getMonth();
+            let yearOI = new Date(action.item.oldItem.date).getFullYear();
+            let monthOI = new Date(action.item.oldItem.date).getMonth();
 
-            let indexYearOld = state.notes.findIndex(e => e.year == yearOldItem);
-            let indexMonthOld = state.notes[indexYearOld].NLY.findIndex(e => e.month == monthOldItem);
+            state.notes[yearOI][monthOI] = state.notes[yearOI][monthOI].filter(e => e.id !== action.item.oldItem.id);
 
-            state.notes[indexYearOld].NLY[indexMonthOld].NLM = [...state.notes[indexYearOld].NLY[indexMonthOld].NLM.filter(e => e.id !== action.item.oldItem.id)];
-            if (state.notes[indexYearOld].NLY[indexMonthOld].NLM.length === 0) {
-                state.notes[indexYearOld].NLY = state.notes[indexYearOld].NLY.filter(e => e.month !== monthOldItem);
-                if (state.notes[indexYearOld].NLY.length === 0) {
-                    state.notes = state.notes.filter(e => e.year !== yearOldItem);
-                }
+            if (state.notes[yearOI][monthOI].length === 0) {
+                delete state.notes[yearOI][monthOI];
+                if (Object.keys(state.notes[year]).length === 0) {   delete state.notes[year]   }
             }
-
-            const indexYear = state.notes.findIndex(e => e.year === year);
-            if (indexYear === -1)
-                state['notes'].push({ year: year, NLY: [{ month: month, NLM: [action.item.item] }] })
+            if (state.notes[year] === undefined) {
+                state.notes[year] = new Object;
+                state.notes[year][month] = [action.item.item];
+            }
             else {
-                const indexMonth = state.notes[indexYear].NLY.findIndex(e => e.month === month);
-                if (indexMonth === -1) state.notes[indexYear].NLY.push({ month: month, NLM: [action.item.item] })
-                else {
-                    const indexItem = state.notes[indexYear].NLY[indexMonth].NLM.findIndex(e => e.id === action.item.item.id);
-                    if (indexItem !== -1) Object.assign(state.notes[indexYear].NLY[indexMonth].NLM[indexItem], action.item.item)
-                    else state.notes[indexItem].NLY[indexMonth].NLM.push(action.item.item);
+                if (state.notes[year][month] !== undefined) {
+                    let indexItem = state.notes[year][month].findIndex(e => e.id === action.item.oldItem.id);
+                    Object.assign(state.notes[year][month][indexItem], action.item.item);
                 }
+                else { state.notes[year][month].push(action.item.item) }
             }
             return state
         }
             break;
         case "ADD_NOTE": {
-            const year = action.item.item['date'].getFullYear();
-            const month = action.item.item['date'].getMonth();
-            let indexYear = state.notes.findIndex(e => e.year === year);
+            const year = new Date(action.item.item['date']).getFullYear();
+            const month = new Date(action.item.item['date']).getMonth();
 
-            if (indexYear === -1) {
-                state['notes'].push({ year: year, NLY: [{ month: month, NLM: [action.item.item] }] });
+            if (state.notes[year] === undefined) {
+                state.notes[year] = new Object;
+                state.notes[year][month] = [action.item.item];
             }
             else {
-                let indexMonth = state.notes[indexYear].NLY.findIndex(e => e.month === month);
-
-                if (indexMonth === -1) state.notes[indexYear].NLY.push({ month: month, NLM: [action.item.item] })
-                else state.notes[indexYear].NLY[indexMonth].NLM.push(action.item.item);
+                if (state.notes[year][month] === undefined) { state.notes[year][month] = [action.item.item] }
+                else { state.notes[year][month].push(action.item.item) }
             }
             return state
         }
             break;
         case "REMOVE_NOTE": {
-            const year = action.item.item['date'].getFullYear();
-            const month = action.item.item['date'].getMonth();
-            let indexYear = state.notes.findIndex(e => e.year == year);
-            let indexMonth = state.notes[indexYear].NLY.findIndex((e) => e.month == month);
+            const year = new Date(action.item.item['date']).getFullYear();
+            const month = new Date(action.item.item['date']).getMonth();
 
-            state.notes[indexYear].NLY[indexMonth].NLM = state.notes[indexYear].NLY[indexMonth].NLM.filter(e => e.id !== action.item.item.id);
+            state.notes[year][month] = state.notes[year][month].filter(e => e.id !== action.item.item.id);
 
-            if (state.notes[indexYear].NLY[indexMonth].NLM.length === 0) {
-                state.notes[indexYear].NLY = state.notes[indexYear].NLY.filter(e => e.month !== month);
-
-                if (state.notes[indexYear].NLY.length === 0) {
-                    state.notes = state.notes.filter(e => e.year !== year);
-                }
+            if (state.notes[year][month].length === 0) {
+                delete state.notes[year][month];
+                if (Object.keys(state.notes[year]).length === 0) { delete state.notes[year]; }
             }
             return state
         }
@@ -122,21 +115,28 @@ const reducer = (state, action) => {
 const DataContext = createContext();
 
 function InfoContext({ children }) {
-    const [info, dispatchInfo] = useReducer(reducer, initialState)
-
+    const [info, dispatchFunction] = useReducer(reducer, initialState);
+    const [switchFunction, setSwitchFunction] = useState(true);
 
     useEffect(() => {
         async function updateInfo() {
             let data = await AsyncStorage.getItem('info');
-            if (data !== null) { dispatchInfo({ type: "UPDATE_DATA", value: JSON.parse(data) }) }
-            else { AsyncStorage.setItem('info', JSON.stringify(info)) }
+            if (data !== null) dispatchInfo({ type: "UPDATE_DATA", info: data })
         }
-        // updateInfo()
+        updateInfo()
     }, []);
 
-    // useEffect(() => {
-    //     if (info !== initialState) AsyncStorage.setItem('info', JSON.stringify(info))
-    // }, [info]);
+
+
+    useEffect(() => {
+        if (info !== initialState) AsyncStorage.setItem('info', JSON.stringify(info))
+    }, [switchFunction]);
+
+
+    function dispatchInfo(params) {
+        dispatchFunction(params);
+        setSwitchFunction(!switchFunction);
+    }
 
     return (
         <DataContext.Provider value={{ info: info, dispatch: dispatchInfo }}>

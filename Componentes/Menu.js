@@ -2,10 +2,22 @@ import { useContext } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { DataContext } from "./InfoContext";
 
+const languageVariable = {
+    theme:{
+        es:'Tema',
+        en:'Theme'
+    },
+    language:{
+        es:'Idioma Español',
+        en:'Language English'
+    }
+}
+
+
 
 export default function Menu({ SSM, SM }) {
     const { dispatch, info } = useContext(DataContext);
-    const { themeList, themeIndex } = useContext(DataContext).info;
+    const { themeList, themeIndex, languageList, languageIndex } = useContext(DataContext).info;
 
 
     return (
@@ -24,7 +36,23 @@ export default function Menu({ SSM, SM }) {
                     backgroundColor: (themeList[themeIndex].menuItemBackground),
                     color: themeList[themeIndex].menuItemColor
                 }}
-                >Tema {themeList[themeIndex].themeTitle[0].toUpperCase() + themeList[themeIndex].themeTitle.substring(1)}</Text>
+                >{languageVariable.theme[languageList[languageIndex]] +" " + themeList[themeIndex].themeTitle[0].toUpperCase() + themeList[themeIndex].themeTitle.substring(1)}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{
+                ...styles.menuItem,
+                borderColor: themeList[themeIndex].menuItemColor
+            }}
+                onPress={() => {
+                    dispatch({type:'CHANGE_LANGUAGE'});
+                    SSM(!SM);
+                }}
+            >
+                <Text style={{
+                    ...styles.menuItemText,
+                    backgroundColor: (themeList[themeIndex].menuItemBackground),
+                    color: themeList[themeIndex].menuItemColor
+                }}
+                >{languageVariable.language[languageList[languageIndex]]}</Text>
             </TouchableOpacity>
             <Text style={{ ...styles.infoDeveloped, color: themeList[themeIndex].menuItemColor }}>Developed by WSenjuW</Text>
         </View>

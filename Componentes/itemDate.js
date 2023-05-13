@@ -1,30 +1,59 @@
-import { useContext } from "react";
-import { StyleSheet, TouchableOpacity, View, Text, FlatList } from "react-native";
+import { useContext, useEffect, useRef } from "react";
+import { StyleSheet, TouchableOpacity, View, Text, FlatList, Dimensions, Animated } from "react-native";
 import { DataContext } from "./InfoContext";
+import { v4 as uuidv4 } from 'uuid';
+
+const titleDelete = {
+    es: 'Eliminar',
+    en: 'Delete'
+}
 
 
-let meses = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre',
-]
+let months = {
+    es: [
+        'Enero',
+        'Febrero',
+        'Marzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre',
+    ],
+    en: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ]
+}
+
+
 
 export default function ItemDate({ element, setModal }) {
-    let { theme, themeList, themeIndex } = useContext(DataContext).info
+    let { theme,
+        themeList,
+        themeIndex,
+        languageList,
+        languageIndex,
+        notes } = useContext(DataContext).info
 
     return (
         <View style={styles.contentBox}>
             <FlatList
-                data={element.NLY}
+                data={Object.keys(notes[element])}
                 renderItem={({ item }) =>
                     <View style={styles.boxContent}>
                         <Text style={{
@@ -32,33 +61,68 @@ export default function ItemDate({ element, setModal }) {
                             color: themeList[themeIndex].textColor,
                             borderBottomColor: themeList[themeIndex].textColor
                         }}
-                        >{meses[item.month] + " - " + element.year}</Text>
+                        >{months[languageList[languageIndex]][item] + " - " + element}</Text>
                         <FlatList
-                            data={item.NLM}
+                            data={notes[element][item]}
                             renderItem={({ item }) => <ItemList theme={theme} element={item} SM={setModal} />}
-                            keyExtractor={item => item.id}
+                            keyExtractor={(item) => uuidv4()}
                         />
                     </View>
                 }
-                keyExtractor={item => item.month}
+                keyExtractor={(item) => uuidv4()}
             />
         </View>
     )
 }
 
 
+
+
 function ItemList({ element, SM }) {
-    let { theme, themeList, themeIndex } = useContext(DataContext).info
+    let { themeList, themeIndex, languageIndex, languageList } = useContext(DataContext).info;
+    let { dispatch } = useContext(DataContext);
+    const opacitySVBox = useRef(new Animated.Value(1)).current;
+
+
+
+
+    function animationSVBox() {
+        Animated.timing(opacitySVBox, {
+            toValue: 0,
+            duration: 400,
+            useNativeDriver: true
+        }).start(({ finished }) =>
+            finished === true && dispatch({ type: 'REMOVE_NOTE', item: { item: element, oldItem: undefined } })
+        )
+    }
 
     return (
-        <TouchableOpacity onPress={() => SM(element)} style={{ ...styles.contentItem, backgroundColor: themeList[themeIndex].itemListBackground }}>
-            <View style={styles.boxDay}>
-                <Text style={styles.textBoxDay} >{element.date.getDate().toString()}</Text>
+        <Animated.ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            snapToAlignment="end"
+            snapToInterval={900}
+            contentOffset={{ x: 210 }}
+            onScrollEndDrag={(e) => e.nativeEvent.contentOffset['x'] == 0 && animationSVBox()}
+            style={{
+                ...styles.scrollViewBox,
+                opacity: opacitySVBox,
+            }}
+        >
+            <View style={styles.deleteItem}>
+                <Text
+                    style={styles.deleteITemText}
+                >{titleDelete[languageList[languageIndex]]}</Text>
             </View>
-            <View style={styles.boxMsg}>
-                <Text style={{ ...styles.textBoxMsg, color: themeList[themeIndex].itemListColor }}>{element.note}</Text>
-            </View>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={() => SM(element)} style={{ ...styles.contentItem, backgroundColor: themeList[themeIndex].itemListBackground }}>
+                <View style={styles.boxDay}>
+                    <Text style={styles.textBoxDay} >{new Date(element.date).getDate()}</Text>
+                </View>
+                <View style={styles.boxMsg}>
+                    <Text style={{ ...styles.textBoxMsg, color: themeList[themeIndex].itemListColor }}>{element.note}</Text>
+                </View>
+            </TouchableOpacity>
+        </Animated.ScrollView>
 
     )
 }
@@ -68,15 +132,38 @@ function ItemList({ element, SM }) {
 
 
 const styles = StyleSheet.create({
-    boxContent: {
-        width: '100%',
-        height: "auto",
-        display: 'flex',
-        flexDirection: 'column',
+    deleteItem: {
+        borderTopLeftRadius: 5,
+        borderBottomLeftRadius: 5,
+        width: 200,
+        height: 120,
+        backgroundColor: '#dc3434',
+        justifyContent: "center",
+        alignSelf: 'center',
+        marginRight: 10
+    },
+    deleteITemText: {
+        fontSize: 30,
+        alignContent: "center",
+        justifyContent: 'center',
+        textAlign: 'center',
+        color: "#f1f1f1"
+    },
+    scrollViewBox: {
+        width: '94%',
+        height: 120,
+        marginVertical: 10,
+        alignSelf: 'center'
     },
     contentBox: {
         width: '100%',
         height: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    boxContent: {
+        width: '100%',
+        height: "auto",
         display: 'flex',
         flexDirection: 'column',
     },
@@ -92,10 +179,9 @@ const styles = StyleSheet.create({
     },
 
     contentItem: {
-        width: '94%',
+        width: ((Dimensions.get('window').width * 94) / 100),
         height: 120,
         backgroundColor: '#7895B2',
-        marginVertical: 12,
         alignSelf: 'center',
         borderRadius: 5,
         display: 'flex',

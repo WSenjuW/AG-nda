@@ -1,9 +1,42 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Animated } from 'react-native';
+
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Animated, BackHandler } from 'react-native';
 import { useContext, useState, useEffect, useRef } from 'react';
 import { BtnAddNoteModal, BtnRemoveNoteModal } from './Btns';
 import { DataContext } from './InfoContext';
 import { v4 as uuidv4 } from 'uuid';
+
+
+const modalTitle = {
+    EN: {
+        es: "Editar nota",
+        en: "Edit note"
+    },
+    CNN: {
+        es: "Nota nueva",
+        en: 'New note'
+    }
+}
+
+const LanguageVariables = {
+    fecha: {
+        es: "Fecha",
+        en: "Date"
+    },
+    hour: {
+        es: "Hora",
+        en: "Hour"
+    },
+    msgNote: {
+        es: "Asunto",
+        en: "Note's subject"
+    }
+}
+
+
+
+
+
 
 export function ModalComponent({ modal }) {
     const [idNumber, setIdNumber] = useState(null);
@@ -12,9 +45,28 @@ export function ModalComponent({ modal }) {
     const [showModal, setShowModal] = useState(false);
     const [mode, setMode] = useState('date');
     const { dispatch } = useContext(DataContext);
+    const { languageList, languageIndex } = useContext(DataContext).info;
+
     const contentOpacityRef = useRef(new Animated.Value(0)).current;
-    const modalBoxScaleRef = useRef(new Animated.Value(0.2)).current;
     const modalBoxTranslationRef = useRef(new Animated.Value(4000)).current;
+
+
+    useEffect(() => {
+        function backAction() {
+            if (modal !== null) {
+                modal.setModal(null);
+                return true;
+            }
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction,
+        );
+
+        return () => backHandler.remove();
+    }, []);
+
 
 
     useEffect(() => {
@@ -24,25 +76,27 @@ export function ModalComponent({ modal }) {
             fecha.setMinutes(0);
         } else {
             setIdNumber(modal.modal.id);
-            setFecha(modal.modal.date);
+            setFecha( new Date(modal.modal.date));
             setText(modal.modal.note)
         }
     }, []);
 
     // el siguiente useEfect es para activar las animaciones
     useEffect(() => {
-        Animated.timing(modalBoxScaleRef, { toValue: 1, duration: 300, delay: 200, useNativeDriver: true }).start()
-        Animated.timing(modalBoxTranslationRef, { toValue: 0, duration: 300, useNativeDriver: true }).start()
-        Animated.timing(contentOpacityRef, { toValue: 1, duration: 400, delay: 600, useNativeDriver: true }).start()
+        Animated.timing(modalBoxTranslationRef, { toValue: 0, duration: 200, useNativeDriver: true }).start()
+        Animated.timing(contentOpacityRef, { toValue: 1, duration: 300, delay: 200, useNativeDriver: true }).start()
     }, []);
 
 
 
-    function ModalPress(e) { setMode(e); setShowModal(true) }
+    function ModalPress(e) {
+        setMode(e);
+        setShowModal(true)
+    }
 
     function sendInfo() {
         let item = {
-            date: fecha,
+            date: fecha.toJSON(),
             note: text.trim(),
             id: idNumber
         }
@@ -61,12 +115,12 @@ export function ModalComponent({ modal }) {
     const { themeList, themeIndex } = useContext(DataContext).info;
 
     return (
-        <Animated.View ref={[modalBoxScaleRef, modalBoxTranslationRef]} style={{
+        <Animated.View  style={{
             ...styles.boxBackground,
             backgroundColor: themeList[themeIndex].background,
             transform: [
-                { scale: modalBoxScaleRef },
-                { translateY: modalBoxTranslationRef }
+
+                { translateX: modalBoxTranslationRef }
             ],
         }}>
             <Animated.View ref={contentOpacityRef} style={{ ...styles.modal, opacity: contentOpacityRef }} >
@@ -74,7 +128,7 @@ export function ModalComponent({ modal }) {
                     <Text
                         style={{ ...styles.infoText, color: themeList[themeIndex].textColor }}
                     >
-                        {modal.modal === undefined ? "Nota nueva" : "Editar nota"}
+                        {modal.modal === undefined ? modalTitle.CNN[languageList[languageIndex]] : modalTitle.EN[languageList[languageIndex]]}
                     </Text>
                     <TouchableOpacity
                         style={{ ...styles.btnClose, backgroundColor: themeList[themeIndex].btnBackground }}
@@ -88,7 +142,7 @@ export function ModalComponent({ modal }) {
                         <Text style={{
                             ...styles.horaFechaTitle,
                             color: themeList[themeIndex].textColor
-                        }}>Fecha</Text>
+                        }}>{LanguageVariables.fecha[languageList[languageIndex]]}</Text>
                         <Text style={{
                             ...styles.horaFechaText,
                             color: themeList[themeIndex].textColor,
@@ -98,7 +152,7 @@ export function ModalComponent({ modal }) {
                         >{fecha.getDate() + " / " + (fecha.getMonth() + 1) + ' / ' + fecha.getFullYear()}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.Hora} onPress={() => ModalPress('time')} >
-                        <Text style={{ ...styles.horaFechaTitle, color: themeList[themeIndex].textColor }}>Hora</Text>
+                        <Text style={{ ...styles.horaFechaTitle, color: themeList[themeIndex].textColor }}>{LanguageVariables.hour[languageList[languageIndex]]}</Text>
                         <Text style={{
                             ...styles.horaFechaText,
                             color: themeList[themeIndex].textColor,
@@ -114,7 +168,7 @@ export function ModalComponent({ modal }) {
                     <Text style={{
                         ...styles.horaFechaTitle,
                         color: themeList[themeIndex].textColor
-                    }}>Asunto</Text>
+                    }}>{LanguageVariables.msgNote[languageList[languageIndex]]}</Text>
                     <TextInput
                         defaultValue={text}
                         style={{

@@ -1,19 +1,27 @@
-import { useState, useContext, useRef } from 'react';
-import { StyleSheet, View, StatusBar, FlatList, SafeAreaView, Text, DrawerLayoutAndroid } from 'react-native';
+import { useState, useContext, useRef, useEffect } from 'react';
+import { StyleSheet, View, StatusBar, FlatList, SafeAreaView, Text, DrawerLayoutAndroid, BackHandler, Alert } from 'react-native';
 import { BtnMenu } from './Btns';
 import { BtnAddNewNote } from './Btns';
 import Menu from './Menu';
 import { ModalComponent } from './modal';
 import ItemDate from './itemDate';
 import { DataContext } from './InfoContext';
+import { v4 as uuidv4 } from 'uuid';
+
+
+const MsgLanguage = {
+  es: 'No tienes notas por ahora.',
+  en: "You don't have any notes saved."
+}
 
 
 export function Principal(props) {
   const [modal, setModal] = useState(null);
   const [showMenu, setShowMenu] = useState(true);
   let { info } = useContext(DataContext);
-  let { themeIndex, themeList } = useContext(DataContext).info;
+  let { themeIndex, themeList, languageList, languageIndex } = useContext(DataContext).info;
   const drawerRef = useRef(null);
+
 
   return (
     <DrawerLayoutAndroid
@@ -23,19 +31,19 @@ export function Principal(props) {
       renderNavigationView={() => <Menu SSM={setShowMenu} SM={showMenu} />}
     >
       <View style={{ ...styles.container, backgroundColor: (themeList[themeIndex].background) }}>
-        <StatusBar backgroundColor='#1f1f1f' hidden={false} />
+        <StatusBar backgroundColor='#1f1f2f' hidden={false} />
         <BtnMenu OP={drawerRef} />
         <BtnAddNewNote modalData={setModal} />
         <SafeAreaView style={styles.scrollBox}>
           {
-            info.notes.length === 0
+            Object.keys(info.notes).length === 0
               ?
-              <Text style={{ ...styles.msg, color: themeList[themeIndex].textColor }}>Por ahora no tienes Notas.</Text>
+              <Text style={{ ...styles.msg, color: themeList[themeIndex].textColor }}>{MsgLanguage[languageList[languageIndex]]}</Text>
               :
               <FlatList
-                data={info.notes}
+                data={Object.keys(info.notes)}
                 renderItem={({ item }) => <ItemDate element={item} setModal={setModal} />}
-                keyExtractor={item => item.year}
+                keyExtractor={(item,i) => i}
               />}
         </SafeAreaView>
         {modal !== null && <ModalComponent modal={{ modal, setModal }} />}
