@@ -9,12 +9,12 @@ AG-nda is a Mobile application for android (calendar type), it was developed wit
 For now I think this is the only thing you need to know before downloading the app, I hope that if you use it I hope it will be useful to you and any contribution or opinion will always be well received, anyone can use it at no cost, and its sale is prohibited.
 
 
-# technical information
+# Technical information
 
 Next we will attach an image that represents the order of the components:
 ![bitmap](https://user-images.githubusercontent.com/93448122/234439807-907695ad-4615-4118-afa7-cc3abb64abb8.png)
 
-## App
+# App
 This component has a simple logic, it only renders an 'InfoContext' component as a parent and the `Principal` component as a child.
 
 
@@ -43,9 +43,8 @@ To modify the notes property there are 3 possible actions ADD, UPDATE, DELETE. T
  
  Para guardar los datos usamos ASyncStorage 
  
- {{{				Contenido Sobre el guardado de datos 				}}}
+ {{{		Contenido Sobre el guardado de datos		}}}
  
-
 
 
  # Principal
@@ -62,7 +61,7 @@ modal: This state can have 3 values, "null" is the default value, "undefined" if
 showMenu: it has the switch function to re-render the component with the new theme.
 
 
-## return
+## Return
 Next we will explain the elements that will be returned in the component, in descending order according to their hierarchy of parent, child, etc:
 
   - `DrawerLayoutAndroid`: It is the element with the highest hierarchy, it is a native element of ReactNative and is responsible for displaying Menu component.
@@ -85,7 +84,7 @@ Next we will explain the elements that will be returned in the component, in des
 ## Menu
 This is a fairly simple component, we do not use states, but we make a call to the DataContext to be able to access the information the currently selected theme.
 
-### Estructura retornada
+## Return
 Next we will explain the elements that will be returned in the component, in descending order according to their hierarchy of parent, child, etc:
 	
 - `View`(menuBox):This element works as a menu component base to locate the rest of the elements in the `Menu` component.
@@ -96,9 +95,6 @@ Next we will explain the elements that will be returned in the component, in des
 	
 	- `Text` (infoDeveloped): name of the developer.
 
-	
-	
-	
 	
 	
 # ModalComponent
@@ -112,7 +108,7 @@ Before explaining the states, I would like to clarify how this structure of the 
 - note: It is the text of the note in string format.
 - id : They are a series of numbers and dashes that function as a unique identifier.
 
-### Estados
+### States
 
 - idNumber: it is the ID 
 - fecha : object Date with the date.
@@ -125,27 +121,45 @@ Before explaining the states, I would like to clarify how this structure of the 
 - `Animated.View`:It is a native component of react Native that acts as the basis for the rest of the elements in the component.
 	- `View` ( boxAuxiliar ) : this component renders the modal function, create or edit a note and also a button to close the modal.
 	
-		- `Text` : function of the modal, edit or create new note.
+	- ` Text ` : function of the modal, edit or create new note.
 	
-		- `TouchableOpacity` : button to close the component.
+	- ` TouchableOpacity ` : button to close the component.
 	
-	- `View` ( BoxHoraFecha ) : stores the buttons to update the date.
+- `View` ( BoxHoraFecha ) : stores the buttons to update the date.
 	
-		- `TouchableOpacity` : Date button.
+	- ` TouchableOpacity ` : Date button.
 	
-		- `TouchableOpacity` : Hour button.
+	- ` TouchableOpacity ` : Hour button.
 	
-	- `View` ( BoxAsuntos ) : this component has a title "Asunto" and also a text input.
+- ` View ` ( BoxAsuntos ) : this component has a title "Asunto" and also a text input.
 	
-		- `Text` : title.
+	- ` Text ` : title.
 	
-		- `TextInput`
+	- ` TextInput `
 	
 	- `View` ( btnBox ) : this item has the function of displaying the buttons for adding or deleting notes.
 	
-		- `BtnRemoveNoteModal` :this component is in a conditional rendering, it only appears if an existing note is manipulated, this button has the function of deleting an existing note.
+	- ` BtnRemoveNoteModal ` :this component is in a conditional rendering, it only appears if an existing note is manipulated, this button has the function of deleting an existing note.
 	
-		- `BtnAddNoteModal` : this button has the function of confirming the action of creating a new note or replacing an existing one.
+	- ` BtnAddNoteModal ` : this button has the function of confirming the action of creating a new note or replacing an existing one.
 	
-	- `DateTImePicker` : this component is part of a conditional rendering, it has the function of displaying a modal that allows modifying the date state.
+	- ` DateTImePicker ` : this component is part of a conditional rendering, it has the function of displaying a modal that allows modifying the date state.
 	
+	
+	
+	
+	
+# ItemDate
+
+Este componente sirve para darle una vista manejable a cada nota almacenada, este componente se divide en 2 partes ,
+el primer Componente llamado `ItemDate` otorga una vista de la informacion del mes y de los años de cada nota, y el segundo componente llamado `ItemList` da la infomacion de cada nota. Comenzaremos explicando la estructura del componente `itemDate` y luego `ItemList`.
+
+
+### ItemDate Return
+
+-`View` (contentBox) : este elemento funciona como base para el resto de elementos del componente.
+	- `FlatList` : es un elemento nativo que se usar para renderizar una lista de elementos.
+		-`View`(boxContent): es el componente de base para el resto de elementos.
+			-`Text`(textMonth): este texto muestra el mes y el año de las notas a continuacion.
+			-`FaltList`:es un elemento nativo que se usar para renderizar una lista de elementos.
+				-`ItemList`: compoente que muestra los datos de cada nota.
