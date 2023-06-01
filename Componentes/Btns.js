@@ -2,7 +2,7 @@ import * as React from "react"
 import { useContext } from "react"
 import Svg, { Path } from "react-native-svg"
 import { View, TouchableOpacity } from 'react-native';
-import { DataContext } from "./InfoContext";
+import { DataContext } from "./Navigation_InfoContext/InfoContext";
 
 
 
@@ -11,7 +11,7 @@ function BtnMenu({ OP }) {
   let { themeList, themeIndex } = useContext(DataContext).info;
 
   return (<TouchableOpacity
-    onPress={() => OP.current.openDrawer() }
+    onPress={() => OP()}
     style={{
       backgroundColor: (themeList[themeIndex].btnBackground),
       width: 90,
@@ -64,11 +64,11 @@ const BtnAddNoteModal = (props) => {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="-8 1 32 7"
         width={70}
-        height={60} 
+        height={60}
         fill="#000"
         className="bi bi-journal-plus"
         alignSelf="center"
-         >
+      >
         <Path fillRule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z" />
         <Path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z" />
         <Path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z" />
@@ -112,12 +112,12 @@ const BtnRemoveNoteModal = (props) => {
 }
 
 
-function BtnAddNewNote(props) {
+function BtnAddNewNote({ onPressEvent }) {
   let { themeList, themeIndex } = useContext(DataContext).info;
 
   return (
     <TouchableOpacity
-      onPress={() => props.modalData(undefined)}
+      onPress={() => onPressEvent(undefined)}
 
       style={{
         width: 70,
@@ -136,7 +136,6 @@ function BtnAddNewNote(props) {
         width={70}
         height={60}
         fill={themeList[themeIndex].textColor}
-        {...props}
       >
         <Path fillRule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z" />
         <Path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z" />

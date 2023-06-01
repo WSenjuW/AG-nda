@@ -1,9 +1,8 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Animated, BackHandler } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Animated } from 'react-native';
 import { useContext, useState, useEffect, useRef } from 'react';
 import { BtnAddNoteModal, BtnRemoveNoteModal } from './Btns';
-import { DataContext } from './InfoContext';
+import { DataContext } from './Navigation_InfoContext/InfoContext';
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -29,71 +28,39 @@ const LanguageVariables = {
     },
     msgNote: {
         es: "Asunto",
-        en: "Note's subject"
+        en: "Note"
     }
 }
 
-
-
-
-
-
-export function ModalComponent({ modal }) {
+export default function NoteModal({ modal, setModal, navigation }) {
     const [idNumber, setIdNumber] = useState(null);
     const [fecha, setFecha] = useState(new Date());
     const [text, setText] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [mode, setMode] = useState('date');
     const { dispatch } = useContext(DataContext);
-    const { languageList, languageIndex } = useContext(DataContext).info;
+    const { languageList,
+        languageIndex,
+        themeList,
+        themeIndex } = useContext(DataContext).info;
 
-    const contentOpacityRef = useRef(new Animated.Value(0)).current;
-    const modalBoxTranslationRef = useRef(new Animated.Value(4000)).current;
-
-
+    // Este useEffect tiene la funcion de elegir la funcion a seguir, si crear una nueva nota, o si modificar una existente.
     useEffect(() => {
-        function backAction() {
-            if (modal !== null) {
-                modal.setModal(null);
-                return true;
-            }
-        };
-
-        const backHandler = BackHandler.addEventListener(
-            'hardwareBackPress',
-            backAction,
-        );
-
-        return () => backHandler.remove();
-    }, []);
-
-
-
-    useEffect(() => {
-        if (modal.modal === undefined) {
+        if (modal === undefined) {
             setIdNumber(uuidv4());
             fecha.setHours(12);
             fecha.setMinutes(0);
         } else {
-            setIdNumber(modal.modal.id);
-            setFecha( new Date(modal.modal.date));
-            setText(modal.modal.note)
+            setIdNumber(modal.id);
+            setFecha(new Date(modal.date));
+            setText(modal.note);
         }
     }, []);
 
-    // el siguiente useEfect es para activar las animaciones
-    useEffect(() => {
-        Animated.timing(modalBoxTranslationRef, { toValue: 0, duration: 200, useNativeDriver: true }).start()
-        Animated.timing(contentOpacityRef, { toValue: 1, duration: 300, delay: 200, useNativeDriver: true }).start()
-    }, []);
+    // Esta funcion tiene la tarea de elegir el tipo de modal DatePicker y de mostrarlo. 
+    function ModalPress(e) { setMode(e); setShowModal(true) }
 
-
-
-    function ModalPress(e) {
-        setMode(e);
-        setShowModal(true)
-    }
-
+    // Esta es una funcion designada para los botones de Agregar/Modificar o borrar la información de una nota.
     function sendInfo() {
         let item = {
             date: fecha.toJSON(),
@@ -101,44 +68,54 @@ export function ModalComponent({ modal }) {
             id: idNumber
         }
         dispatch({
-            type: (modal.modal === undefined ? "ADD_NOTE" : "UPDATE_NOTE"),
-            item: { item: item, oldItem: modal.modal }
+            type: (modal === undefined ? "ADD_NOTE" : "UPDATE_NOTE"),
+            item: item,
+            oldItem: modal
         });
-        modal.setModal(null);
+        setModal(undefined);
+        navigation.navigate('Home');
     }
-
+    // Esta funcion tiene la tarea de eliminar una nota.
     function removeInfo() {
-        dispatch({ type: 'REMOVE_NOTE', item: { item: modal.modal, oldItem: undefined } })
-        modal.setModal(null);
+        dispatch({
+            type: 'REMOVE_NOTE',
+            item: modal,
+            oldItem: undefined
+        });
+        setModal(undefined);
+        navigation.navigate("Home");
     }
-
-    const { themeList, themeIndex } = useContext(DataContext).info;
 
     return (
-        <Animated.View  style={{
+        <View style={{
             ...styles.boxBackground,
             backgroundColor: themeList[themeIndex].background,
-            transform: [
-
-                { translateX: modalBoxTranslationRef }
-            ],
         }}>
-            <Animated.View ref={contentOpacityRef} style={{ ...styles.modal, opacity: contentOpacityRef }} >
+            <View style={styles.modal} >
                 <View style={styles.boxAuxiliar}>
                     <Text
-                        style={{ ...styles.infoText, color: themeList[themeIndex].textColor }}
+                        style={{
+                            ...styles.infoText,
+                            color: themeList[themeIndex].textColor
+                        }}
                     >
-                        {modal.modal === undefined ? modalTitle.CNN[languageList[languageIndex]] : modalTitle.EN[languageList[languageIndex]]}
+                        {modal === undefined ? modalTitle.CNN[languageList[languageIndex]] : modalTitle.EN[languageList[languageIndex]]}
                     </Text>
                     <TouchableOpacity
-                        style={{ ...styles.btnClose, backgroundColor: themeList[themeIndex].btnBackground }}
-                        onPress={() => modal.setModal(null)}
+                        style={{
+                            ...styles.btnClose,
+                            backgroundColor: themeList[themeIndex].btnBackground
+                        }}
+                        onPress={() => { setModal(undefined), navigation.navigate("Home") }}
                     >
-                        <Text style={{ ...styles.textBtnClose, color: themeList[themeIndex].btnColor }}>X</Text>
+                        <Text style={{
+                            ...styles.textBtnClose,
+                            color: themeList[themeIndex].textColor
+                        }}>X</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.BoxHoraFecha}>
-                    <TouchableOpacity style={{ ...styles.Fecha }} onPress={() => ModalPress('date')}>
+                    <TouchableOpacity style={styles.Fecha} onPress={() => ModalPress('date')}>
                         <Text style={{
                             ...styles.horaFechaTitle,
                             color: themeList[themeIndex].textColor
@@ -146,17 +123,20 @@ export function ModalComponent({ modal }) {
                         <Text style={{
                             ...styles.horaFechaText,
                             color: themeList[themeIndex].textColor,
-                            backgroundColor: themeList[themeIndex].menuItemBackground,
+                            backgroundColor: themeList[themeIndex].btnBackground,
                             borderBottomColor: themeList[themeIndex].textColor
                         }}
                         >{fecha.getDate() + " / " + (fecha.getMonth() + 1) + ' / ' + fecha.getFullYear()}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.Hora} onPress={() => ModalPress('time')} >
-                        <Text style={{ ...styles.horaFechaTitle, color: themeList[themeIndex].textColor }}>{LanguageVariables.hour[languageList[languageIndex]]}</Text>
+                        <Text style={{
+                            ...styles.horaFechaTitle,
+                            color: themeList[themeIndex].textColor
+                        }}>{LanguageVariables.hour[languageList[languageIndex]]}</Text>
                         <Text style={{
                             ...styles.horaFechaText,
                             color: themeList[themeIndex].textColor,
-                            backgroundColor: themeList[themeIndex].menuItemBackground,
+                            backgroundColor: themeList[themeIndex].btnBackground,
                             borderBottomColor: themeList[themeIndex].textColor
                         }}
                         >{(fecha.getHours().toString().length === 1 ? ('0' + fecha.getHours()) : fecha.getHours())
@@ -164,7 +144,7 @@ export function ModalComponent({ modal }) {
                             (fecha.getMinutes().toString().length === 1 ? ("0" + fecha.getMinutes()) : fecha.getMinutes())}</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.BoxAsuntos}>
+                <View style={{ ...styles.BoxAsuntos, borderBottomColor: themeList[themeIndex].textColor }}>
                     <Text style={{
                         ...styles.horaFechaTitle,
                         color: themeList[themeIndex].textColor
@@ -173,20 +153,20 @@ export function ModalComponent({ modal }) {
                         defaultValue={text}
                         style={{
                             ...styles.asunto,
-                            backgroundColor: themeList[themeIndex].menuItemBackground,
-                            borderBottomColor: themeList[themeIndex].textColor,
-                            color: themeList[themeIndex].textColor
+                            backgroundColor: themeList[themeIndex].btnBackground,
+                            color: themeList[themeIndex].textColor,
                         }}
-                        multiline={true}
                         onChange={e => { setText(e.nativeEvent.text) }}
                         autoCapitalize='sentences'
                         cursorColor={themeList[themeIndex].textColor}
                         inputMode='text'
-                        maxLength={500}
+                        multiline={true}
+                        numberOfLines={19}
+
                     />
                 </View>
                 <View style={styles.btnBox}>
-                    {modal.modal !== undefined && <BtnRemoveNoteModal RI={removeInfo} />}
+                    {modal !== undefined && <BtnRemoveNoteModal RI={removeInfo} />}
                     <BtnAddNoteModal SI={sendInfo} showModal={text !== "" ? false : true} />
                 </View>
                 {showModal
@@ -198,8 +178,8 @@ export function ModalComponent({ modal }) {
                         is24Hour={true}
                         onChange={(e, selectedData) => { setFecha(selectedData); setShowModal(false) }}
                     />}
-            </Animated.View>
-        </Animated.View>
+            </View>
+        </View>
     )
 }
 
@@ -276,32 +256,35 @@ const styles = StyleSheet.create({
         paddingBottom: 5,
         backgroundColor: '#C0C2C8',
         textAlign: 'center',
-        borderBottomWidth: 3,
-        textAlignVertical: 'bottom'
+        borderBottomWidth: 2,
+        textAlignVertical: 'bottom',
     },
     horaFechaTitle: {
         fontSize: 16,
         marginLeft: 5,
         marginBottom: 5,
+        letterSpacing: 1.6
     },
     BoxAsuntos: {
         width: "86%",
-        height: '50%',
+        height: "50%",
         marginVertical: 50,
         alignSelf: 'center',
         display: 'flex',
         flexDirection: 'column',
+        overflow: 'hidden',
+        borderBottomWidth: 3
     },
     asunto: {
         width: '100%',
-        height: '100%',
         padding: 20,
+        paddingBottom: 40,
         backgroundColor: '#C0C2C8',
         textAlignVertical: 'top',
         fontSize: 20,
-        borderRadius: 3,
-        borderBottomWidth: 4,
-        color: '#000'
+        color: '#000',
+        alignSelf: 'center',
+        justifyContent: 'center'
     },
     btnBox: {
         width: '86%',

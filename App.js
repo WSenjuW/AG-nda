@@ -1,11 +1,13 @@
-import { InfoContext } from './Componentes/InfoContext';
-import { Principal } from './Componentes/Principal';
+import {  InfoContext } from './Componentes/Navigation_InfoContext/InfoContext';
+import { NavigationContainer } from '@react-navigation/native';
+import DrawerNavigator from './Componentes/Navigation_InfoContext/Navigation';
 
 export default function App() {
-
   return (
     <InfoContext>
-      <Principal />
+      <NavigationContainer>
+        <DrawerNavigator />
+      </NavigationContainer>
     </InfoContext>
   );
 }

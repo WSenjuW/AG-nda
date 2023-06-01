@@ -1,6 +1,7 @@
-import { useContext, useEffect, useRef } from "react";
-import { StyleSheet, TouchableOpacity, View, Text, FlatList, Dimensions, Animated } from "react-native";
-import { DataContext } from "./InfoContext";
+import { Animated, View, StyleSheet, TouchableOpacity, Text, Dimensions, FlatList } from "react-native";
+import { useContext, useState, useRef } from "react";
+import { DataContext } from "../Navigation_InfoContext/InfoContext";
+import { LinearGradient } from "expo-linear-gradient";
 import { v4 as uuidv4 } from 'uuid';
 
 const titleDelete = {
@@ -8,68 +9,29 @@ const titleDelete = {
     en: 'Delete'
 }
 
-
-let months = {
-    es: [
-        'Enero',
-        'Febrero',
-        'Marzo',
-        'Abril',
-        'Mayo',
-        'Junio',
-        'Julio',
-        'Agosto',
-        'Septiembre',
-        'Octubre',
-        'Noviembre',
-        'Diciembre',
-    ],
-    en: [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-    ]
+let today = {
+    es: "Hoy",
+    en: "Today"
 }
 
-
-
-export default function ItemDate({ element, setModal }) {
-    let { theme,
-        themeList,
-        themeIndex,
-        languageList,
-        languageIndex,
-        notes } = useContext(DataContext).info
+export default function TodayItem({ navigation, setModal }) {
+    let { languageList, languageIndex, todayNotes } = useContext(DataContext).info;
 
     return (
-        <View style={styles.contentBox}>
+        <View style={styles.todayView}>
+            <LinearGradient
+                colors={['#ed3939', 'transparent']}
+                style={{ width: '60%', height: 30 }}
+                start={[.2, 0]}
+                end={[.9, 0]}
+            >
+                <Text style={{ ...styles.textTodayView, color: "#fff" }}
+                >{today[languageList[languageIndex]] + " - " + new Date().getFullYear()}</Text>
+            </LinearGradient>
             <FlatList
-                data={Object.keys(notes[element])}
-                renderItem={({ item }) =>
-                    <View style={styles.boxContent}>
-                        <Text style={{
-                            ...styles.textMonth,
-                            color: themeList[themeIndex].textColor,
-                            borderBottomColor: themeList[themeIndex].textColor
-                        }}
-                        >{months[languageList[languageIndex]][item] + " - " + element}</Text>
-                        <FlatList
-                            data={notes[element][item]}
-                            renderItem={({ item }) => <ItemList theme={theme} element={item} SM={setModal} />}
-                            keyExtractor={(item) => uuidv4()}
-                        />
-                    </View>
-                }
-                keyExtractor={(item) => uuidv4()}
+                data={todayNotes}
+                renderItem={({ item }) => <TodayItemList navigation={navigation} element={item} SM={setModal} />}
+                keyExtractor={(element) => uuidv4()}
             />
         </View>
     )
@@ -77,44 +39,50 @@ export default function ItemDate({ element, setModal }) {
 
 
 
-
-function ItemList({ element, SM }) {
-    let { themeList, themeIndex, languageIndex, languageList } = useContext(DataContext).info;
+function TodayItemList({ navigation, element, SM }) {
+    const [opacityValue, setOpacityValue] = useState(0);
+    const [maxScroll, setMaxScroll] = useState(0);
     let { dispatch } = useContext(DataContext);
+    let { themeList, themeIndex, languageIndex, languageList } = useContext(DataContext).info;
     const opacitySVBox = useRef(new Animated.Value(1)).current;
-
-
-
 
     function animationSVBox() {
         Animated.timing(opacitySVBox, {
             toValue: 0,
             duration: 400,
             useNativeDriver: true
-        }).start(({ finished }) =>
-            finished === true && dispatch({ type: 'REMOVE_NOTE', item: { item: element, oldItem: undefined } })
-        )
+        }).start(({ finished }) => { dispatch({ type: "REMOVE_NOTE", item: element }) })
+    }
+
+    function calculandoOpacity(e) {
+        if (e > maxScroll) setMaxScroll(e);
+        else {
+            let VALUE = Math.round((e * 100) / maxScroll) / 100;
+            setOpacityValue((1 - VALUE) - .2)
+        }
     }
 
     return (
         <Animated.ScrollView
+            onScroll={(e) => calculandoOpacity(e.nativeEvent.contentOffset['x'])}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             snapToAlignment="end"
             snapToInterval={900}
-            contentOffset={{ x: 210 }}
+            contentOffset={{ x: 2000 }}
             onScrollEndDrag={(e) => e.nativeEvent.contentOffset['x'] == 0 && animationSVBox()}
-            style={{
-                ...styles.scrollViewBox,
-                opacity: opacitySVBox,
-            }}
+            style={{ ...styles.scrollViewBox, opacity: opacitySVBox, }}
         >
-            <View style={styles.deleteItem}>
+            <View style={{ ...styles.deleteItem, opacity: opacityValue }}>
                 <Text
                     style={styles.deleteITemText}
                 >{titleDelete[languageList[languageIndex]]}</Text>
             </View>
-            <TouchableOpacity onPress={() => SM(element)} style={{ ...styles.contentItem, backgroundColor: themeList[themeIndex].itemListBackground }}>
+            <TouchableOpacity onPress={() => {
+                SM(element);
+                navigation.navigate('Modal');
+            }}
+                style={{ ...styles.contentItem, backgroundColor: themeList[themeIndex].itemListBackground }}>
                 <View style={styles.boxDay}>
                     <Text style={styles.textBoxDay} >{new Date(element.date).getDate()}</Text>
                 </View>
@@ -123,19 +91,28 @@ function ItemList({ element, SM }) {
                 </View>
             </TouchableOpacity>
         </Animated.ScrollView>
-
     )
 }
 
 
 
-
-
 const styles = StyleSheet.create({
+    todayView: {
+        width: '94%',
+        alignSelf: "center",
+        display: "flex",
+        flexDirection: "column",
+    },
+    textTodayView: {
+        width: '100%',
+        fontSize: 20,
+        letterSpacing: 2,
+        paddingLeft: 6,
+    },
     deleteItem: {
         borderTopLeftRadius: 5,
         borderBottomLeftRadius: 5,
-        width: 200,
+        width: 240,
         height: 120,
         backgroundColor: '#dc3434',
         justifyContent: "center",
@@ -150,7 +127,7 @@ const styles = StyleSheet.create({
         color: "#f1f1f1"
     },
     scrollViewBox: {
-        width: '94%',
+        width: '100%',
         height: 120,
         marginVertical: 10,
         alignSelf: 'center'
@@ -230,6 +207,5 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
         paddingVertical: 4,
         paddingLeft: 12
-
     }
 })
