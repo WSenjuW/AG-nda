@@ -5,7 +5,7 @@ import { BtnAddNewNote } from '../Btns';
 import ItemDate from './itemDate';
 import { DataContext } from '../Navigation_InfoContext/InfoContext';
 import TodayItem from './todayItem';
-import { LinearGradient } from 'expo-linear-gradient';
+
 
 
 const MsgLanguage = {
