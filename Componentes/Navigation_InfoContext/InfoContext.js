@@ -13,8 +13,8 @@ const initialState = {
             themeTitle: 'light',
             textColor: "#000",
             background: '#f1f1f1',
-            btnBackground: '#DDDDDD',
-            itemListBackground: '#FFD966',
+            btnBackground: '#CBCBCB',
+            itemListBackground: '#CBCBCB',
             typeTheme: "light"
         },
         {
@@ -22,7 +22,7 @@ const initialState = {
             textColor: "#fff",
             background: '#1f1f1f',
             btnBackground: '#363636',
-            itemListBackground: '#0E8388',
+            itemListBackground: '#363636',
             typeTheme: "dark"
         }
     ]
@@ -205,7 +205,7 @@ function InfoContext({ children }) {
 
     useEffect(() => {
         async function updateInfo() {
-            // await AsyncStorage.clear();
+            await AsyncStorage.clear();
             let data = await AsyncStorage.getItem('info');
             if (data !== null) {
                 dispatchInfo({ type: "UPDATE_DATA", info: data });

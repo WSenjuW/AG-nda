@@ -3,41 +3,50 @@ import { useContext, useState, useRef } from "react";
 import { DataContext } from "../Navigation_InfoContext/InfoContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { v4 as uuidv4 } from 'uuid';
-
-const titleDelete = {
-    es: 'Eliminar',
-    en: 'Delete'
-}
-
-let today = {
-    es: "Hoy",
-    en: "Today"
-}
+import { TODAY, DELETE} from '../StaticText.json';
 
 export default function TodayItem({ navigation, setModal }) {
     let { languageList, languageIndex, todayNotes } = useContext(DataContext).info;
 
     return (
-        <View style={styles.todayView}>
+        <View style={styles1.todayView}>
             <LinearGradient
                 colors={['#ed3939', 'transparent']}
                 style={{ width: '60%', height: 30 }}
                 start={[.2, 0]}
                 end={[.9, 0]}
             >
-                <Text style={{ ...styles.textTodayView, color: "#fff" }}
-                >{today[languageList[languageIndex]] + " - " + new Date().getFullYear()}</Text>
+                <Text style={styles1.textTodayView}
+                >{TODAY[languageList[languageIndex]] + " - " + new Date().getFullYear()}</Text>
             </LinearGradient>
-            <FlatList
-                data={todayNotes}
-                renderItem={({ item }) => <TodayItemList navigation={navigation} element={item} SM={setModal} />}
-                keyExtractor={(element) => uuidv4()}
-            />
+            {
+                todayNotes.map((element) =>
+                    <TodayItemList
+                        key={uuidv4()}
+                        navigation={navigation}
+                        element={element}
+                        SM={setModal}
+                    />)
+            }
         </View>
     )
 }
 
-
+const styles1 = StyleSheet.create({
+    todayView: {
+        width: '100%',
+        alignSelf: "center",
+        display: "flex",
+        flexDirection: "column",
+    },
+    textTodayView: {
+        width: '100%',
+        fontSize: 20,
+        letterSpacing: 2,
+        paddingLeft: 6,
+        color: '#fff'
+    },
+})
 
 function TodayItemList({ navigation, element, SM }) {
     const [opacityValue, setOpacityValue] = useState(0);
@@ -62,6 +71,9 @@ function TodayItemList({ navigation, element, SM }) {
         }
     }
 
+    const Date_Today = new Date(element.date);
+    const Minutes = Date_Today.getMinutes().toString().length === 1 ?  ('0' + Date_Today.getMinutes()) : Date_Today.getMinutes();
+
     return (
         <Animated.ScrollView
             onScroll={(e) => calculandoOpacity(e.nativeEvent.contentOffset['x'])}
@@ -73,43 +85,30 @@ function TodayItemList({ navigation, element, SM }) {
             onScrollEndDrag={(e) => e.nativeEvent.contentOffset['x'] == 0 && animationSVBox()}
             style={{ ...styles.scrollViewBox, opacity: opacitySVBox, }}
         >
-            <View style={{ ...styles.deleteItem, opacity: opacityValue }}>
+            <View style={{ ...styles.deleteBox, opacity: opacityValue }}>
                 <Text
-                    style={styles.deleteITemText}
-                >{titleDelete[languageList[languageIndex]]}</Text>
+                    style={styles.deleteText}
+                >{DELETE[languageList[languageIndex]]}</Text>
             </View>
             <TouchableOpacity onPress={() => {
                 SM(element);
                 navigation.navigate('Modal');
             }}
                 style={{ ...styles.contentItem, backgroundColor: themeList[themeIndex].itemListBackground }}>
-                <View style={styles.boxDay}>
-                    <Text style={styles.textBoxDay} >{new Date(element.date).getDate()}</Text>
+                <View style={styles.boxDate}>
+                    <Text style={styles.textHours} >{TODAY[languageList[languageIndex]]}</Text>
+                    <Text style={styles.textBDToday} >{Date_Today.getHours() + ":" + Minutes}</Text>
                 </View>
                 <View style={styles.boxMsg}>
-                    <Text style={{ ...styles.textBoxMsg, color: themeList[themeIndex].itemListColor }}>{element.note}</Text>
+                    <Text style={{ ...styles.textBoxMsg, color: themeList[themeIndex].textColor }}>{element.note}</Text>
                 </View>
             </TouchableOpacity>
         </Animated.ScrollView>
     )
 }
 
-
-
 const styles = StyleSheet.create({
-    todayView: {
-        width: '94%',
-        alignSelf: "center",
-        display: "flex",
-        flexDirection: "column",
-    },
-    textTodayView: {
-        width: '100%',
-        fontSize: 20,
-        letterSpacing: 2,
-        paddingLeft: 6,
-    },
-    deleteItem: {
+    deleteBox: {
         borderTopLeftRadius: 5,
         borderBottomLeftRadius: 5,
         width: 240,
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginRight: 10
     },
-    deleteITemText: {
+    deleteText: {
         fontSize: 30,
         alignContent: "center",
         justifyContent: 'center',
@@ -132,73 +131,51 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         alignSelf: 'center'
     },
-    contentBox: {
-        width: '100%',
-        height: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    boxContent: {
-        width: '100%',
-        height: "auto",
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    textMonth: {
-        width: '94%',
-        alignSelf: 'center',
-        marginTop: 15,
-        height: 40,
-        textAlignVertical: 'center',
-        borderBottomWidth: 2,
-        fontSize: 22,
-        color: "#000"
-    },
-
     contentItem: {
         width: ((Dimensions.get('window').width * 94) / 100),
         height: 120,
         backgroundColor: '#7895B2',
         alignSelf: 'center',
-        borderRadius: 5,
+        borderRadius: 12,
+        padding:4,
         display: 'flex',
         flexDirection: "row",
     },
-    boxDay: {
-        width: 100,
-        height: 100,
+    boxDate: {
+        width: 118,
+        height: 112,
         alignItems: "center",
-        marginHorizontal: 14,
         alignSelf: 'center',
         overflow: 'hidden',
         display: "flex",
         flexDirection: "column",
         backgroundColor: '#fff',
-        borderRadius: 8,
+        borderRadius: 12,
     },
-    textBoxDay: {
+    textBDToday: {
         width: '100%',
-        height: '100%',
-        fontSize: 70,
+        height: '70%',
+        fontSize: 34,
+        color:'#5E5E5E',
         textAlign: 'center',
         textAlignVertical: "center",
-        marginBottom: 2,
-        borderRadius: 6
     },
     textHours: {
         width: '100%',
-        height: 28,
+        backgroundColor: '#F04B4F',
+        height: "30%",
+        borderBottomWidth: 1,
+        borderBottomColor: 'gray',
         textAlign: 'center',
         textAlignVertical: 'center',
-        fontSize: 22,
-        backgroundColor: '#69818e50',
-        borderRadius: 6
+        fontSize: 18,
+        color: "#f1f1f1"
     },
     boxMsg: {
-        width: "72%",
+        width: "75%",
         height: 100,
         alignSelf: 'center',
-        borderLeftWidth: 5,
+        marginLeft:4,
     },
     textBoxMsg: {
         width: "100%",

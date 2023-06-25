@@ -1,0 +1,78 @@
+{
+  "MENU": {
+    "STT": {
+      "es": "Ajustes",
+      "en": "Settings"
+    },
+    "P_N": {
+      "es": "Notas antiguas",
+      "en": "Old notes"
+    }
+  },
+  "SETTING_OPTIONS": {
+    "theme": {
+      "es": "Tema",
+      "en": "Theme"
+    },
+    "lang": {
+      "es": "Lenguaje",
+      "en": "Language"
+    }
+  },
+  "TODAY": {
+    "es": "Hoy",
+    "en": "Today"
+  },
+  "MONTHS": {
+    "es": [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre"
+    ],
+    "en": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
+  },
+  "MONTHS_COLORS": [
+    "#54BAB9",
+    "#9A86A4",
+    "#FFAE6D",
+    "#FFACC7",
+    "#4F709C",
+    "#B799FF",
+    "#AD8B73",
+    "#65C18C",
+    "#3A98B9",
+    "#FFACAC",
+    "#FAAB78",
+    "#9EB23B"
+  ],
+  "HOME_MSG": {
+    "es": "No tienes notas por ahora.",
+    "en": "You don't have any notes saved."
+  },
+  "DELETE": {
+    "es": "Eliminar",
+    "en": "Delete"
+  }
+}

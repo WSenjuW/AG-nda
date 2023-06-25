@@ -1,17 +1,7 @@
 import { useContext } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { DataContext } from "../Navigation_InfoContext/InfoContext";
-
-const languageVariable = {
-    ajuste: {
-        es: 'Ajustes',
-        en: 'Settings'
-    },
-    PN:{
-        es:'Notas pasadas',
-        en:'Past notes'
-    }
-}
+import { MENU } from '../StaticText.json';
 
 export default function Menu({ navigation }) {
     const { themeList, themeIndex, languageList, languageIndex, pastNotes } = useContext(DataContext).info;
@@ -30,7 +20,7 @@ export default function Menu({ navigation }) {
                     backgroundColor: (themeList[themeIndex].btnBackground),
                     color: themeList[themeIndex].textColor
                 }}
-                >{languageVariable.ajuste[languageList[languageIndex]]}</Text>
+                >{MENU.STT[languageList[languageIndex]]}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={{
                 ...styles.menuItem,
@@ -42,7 +32,7 @@ export default function Menu({ navigation }) {
                     ...styles.menuItemText,
                     color: themeList[themeIndex].textColor
                 }}>
-                {languageVariable.PN[languageList[languageIndex]]}
+                {MENU.P_N[languageList[languageIndex]]}
                 </Text>
             </TouchableOpacity>
             <Text style={{ ...styles.infoDeveloped, color: themeList[themeIndex].textColor }}>Developed by WSenjuW</Text>

@@ -2,75 +2,62 @@ import { useContext, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View, Text, FlatList, Dimensions, Animated } from "react-native";
 import { DataContext } from "../Navigation_InfoContext/InfoContext";
 import { v4 as uuidv4 } from 'uuid';
-
-const titleDelete = {
-    es: 'Eliminar',
-    en: 'Delete'
-}
-
-let months = {
-    es: [
-        'Enero',
-        'Febrero',
-        'Marzo',
-        'Abril',
-        'Mayo',
-        'Junio',
-        'Julio',
-        'Agosto',
-        'Septiembre',
-        'Octubre',
-        'Noviembre',
-        'Diciembre',
-    ],
-    en: [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-    ]
-}
+import { MONTHS, DELETE, MONTHS_COLORS } from '../StaticText.json';
 
 export default function ItemDate({ element, setModal, navigation }) {
     let { theme,
         themeList,
         themeIndex,
-        languageList,
-        languageIndex,
         notes } = useContext(DataContext).info
 
+    const TodayDate = new Date();
+
     return (
-        <View style={styles.contentBox}>
-            <FlatList
-                data={Object.keys(notes[element])}
-                renderItem={({ item }) =>
-                    <View style={styles.boxContent}>
-                        <Text style={{
-                            ...styles.textMonth,
-                            color: themeList[themeIndex].textColor,
-                            borderBottomColor: themeList[themeIndex].textColor
-                        }}
-                        >{months[languageList[languageIndex]][item] + " - " + element}</Text>
-                        <FlatList
-                            data={notes[element][item]}
-                            renderItem={({ item }) => <ItemList navigation={navigation} theme={theme} element={item} SM={setModal} />}
-                            keyExtractor={(item) => uuidv4()}
-                        />
-                    </View>
-                }
-                keyExtractor={(item) => uuidv4()}
-            />
+        <View style={styles1.contentBox}>
+            {
+                TodayDate.getFullYear() != element
+                &&
+                <Text style={{
+                    ...styles1.textMonth,
+                    color: themeList[themeIndex].textColor,
+                    borderBottomColor: themeList[themeIndex].textColor
+                }}
+                >{element}
+                </Text>
+            }
+            {Object.keys(notes[element]).map((el) =>
+                <View
+                    key={uuidv4()}
+                    style={styles.boxContent}
+                >
+                    {
+                        notes[element][el].map((elemento) => <ItemList key={uuidv4()} navigation={navigation} theme={theme} element={elemento} SM={setModal} />)
+                    }
+                </View>
+            )}
         </View>
     )
 }
+
+const styles1 = StyleSheet.create({
+    contentBox: {
+        width: '100%',
+        height: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    textMonth: {
+        width: '100%',
+        alignSelf: 'center',
+        height: 40,
+        textAlignVertical: 'center',
+        borderBottomWidth: 2,
+        fontSize: 22,
+        color: "#000",
+        paddingLeft: 2,
+        letterSpacing: 2
+    },
+});
 
 function ItemList({ element, SM, navigation }) {
     let { themeList, themeIndex, languageIndex, languageList } = useContext(DataContext).info;
@@ -91,7 +78,7 @@ function ItemList({ element, SM, navigation }) {
                 oldItem: undefined
             })
         )
-    }
+    };
 
     function calculandoOpacity(e) {
         if (e > maxScroll) {
@@ -100,7 +87,7 @@ function ItemList({ element, SM, navigation }) {
             let VALUE = Math.round((e * 100) / maxScroll) / 100;
             setOpacityValue((1 - VALUE) - .2)
         }
-    }
+    };
 
     return (
         <Animated.ScrollView
@@ -118,15 +105,19 @@ function ItemList({ element, SM, navigation }) {
         >
             <View style={{ ...styles.deleteItem, opacity: opacityValue }}>
                 <Text style={styles.deleteITemText}
-                >{titleDelete[languageList[languageIndex]]}</Text>
+                >{DELETE[languageList[languageIndex]]}</Text>
             </View>
             <TouchableOpacity onPress={() => { SM(element); navigation.navigate('Modal'); }}
                 style={{ ...styles.contentItem, backgroundColor: themeList[themeIndex].itemListBackground }}>
-                <View style={styles.boxDay}>
-                    <Text style={styles.textBoxDay} >{new Date(element.date).getDate()}</Text>
+                <View style={styles.boxDate}>
+                    <Text style={{...styles.textMonthBD,
+                        backgroundColor:MONTHS_COLORS[new Date(element.date).getMonth()]}}>
+                        {MONTHS[languageList[languageIndex]][new Date(element.date).getMonth()]}
+                    </Text>
+                    <Text style={styles.textDayBD} >{new Date(element.date).getDate()}</Text>
                 </View>
                 <View style={styles.boxMsg}>
-                    <Text style={{ ...styles.textBoxMsg, color: themeList[themeIndex].itemListColor }}>{element.note}</Text>
+                    <Text style={{ ...styles.textBoxMsg, color: themeList[themeIndex].textColor }}>{element.note}</Text>
                 </View>
             </TouchableOpacity>
         </Animated.ScrollView>
@@ -135,11 +126,42 @@ function ItemList({ element, SM, navigation }) {
 }
 
 const styles = StyleSheet.create({
-    contentBox: {
-        width: '100%',
-        height: 'auto',
+    contentItem: {
+        width: ((Dimensions.get('window').width * 94) / 100),
+        height: 120,
+        backgroundColor: '#7895B2',
+        alignSelf: 'center',
+        borderRadius: 12,
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: "row",
+        padding: 4
+    },
+    boxDate: {
+        width: 118,
+        height: 112,
+        alignItems: "center",
+        alignSelf: 'center',
+        overflow: 'hidden',
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: '#f1f1f1',
+        borderRadius: 12,
+    },
+    textMonthBD: {
+        width: '100%',
+        height: '30%',
+        textAlign: 'center',
+        textAlignVertical: 'center',
+        fontSize: 20,
+        color: '#f1f1f1'
+    },
+    textDayBD: {
+        width: '100%',
+        height: '70%',
+        fontSize: 60,
+        textAlign: 'center',
+        textAlignVertical: "center",
+        color: '#5E5E5E',
     },
     deleteItem: {
         borderTopLeftRadius: 5,
@@ -159,55 +181,17 @@ const styles = StyleSheet.create({
         color: "#f1f1f1"
     },
     scrollViewBox: {
-        width: '94%',
+        width: '100%',
         height: 120,
         marginVertical: 10,
-        alignSelf: 'center'
+        alignSelf: 'center',
+
     },
     boxContent: {
         width: '100%',
         height: "auto",
         display: 'flex',
         flexDirection: 'column',
-    },
-    textMonth: {
-        width: '94%',
-        alignSelf: 'center',
-        height: 40,
-        textAlignVertical: 'center',
-        borderBottomWidth: 2,
-        fontSize: 22,
-        color: "#000"
-    },
-    contentItem: {
-        width: ((Dimensions.get('window').width * 94) / 100),
-        height: 120,
-        backgroundColor: '#7895B2',
-        alignSelf: 'center',
-        borderRadius: 5,
-        display: 'flex',
-        flexDirection: "row",
-    },
-    boxDay: {
-        width: 100,
-        height: 100,
-        alignItems: "center",
-        marginHorizontal: 14,
-        alignSelf: 'center',
-        overflow: 'hidden',
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: '#fff',
-        borderRadius: 8,
-    },
-    textBoxDay: {
-        width: '100%',
-        height: '100%',
-        fontSize: 70,
-        textAlign: 'center',
-        textAlignVertical: "center",
-        marginBottom: 2,
-        borderRadius: 6
     },
     textHours: {
         width: '100%',
@@ -222,7 +206,6 @@ const styles = StyleSheet.create({
         width: "72%",
         height: 100,
         alignSelf: 'center',
-        borderLeftWidth: 5,
     },
     textBoxMsg: {
         width: "100%",
@@ -231,6 +214,5 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
         paddingVertical: 4,
         paddingLeft: 12
-
     }
 })
