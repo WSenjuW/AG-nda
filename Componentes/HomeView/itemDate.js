@@ -2,7 +2,7 @@ import { useContext, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View, Text, FlatList, Dimensions, Animated } from "react-native";
 import { DataContext } from "../Navigation_InfoContext/InfoContext";
 import { v4 as uuidv4 } from 'uuid';
-import { MONTHS, DELETE, MONTHS_COLORS } from '../StaticText.json';
+import { MONTHS, DELETE_TITLE, MONTHS_COLORS } from '../StaticText.json';
 
 export default function ItemDate({ element, setModal, navigation }) {
     let { theme,
@@ -105,7 +105,7 @@ function ItemList({ element, SM, navigation }) {
         >
             <View style={{ ...styles.deleteItem, opacity: opacityValue }}>
                 <Text style={styles.deleteITemText}
-                >{DELETE[languageList[languageIndex]]}</Text>
+                >{DELETE_TITLE[languageList[languageIndex]]}</Text>
             </View>
             <TouchableOpacity onPress={() => { SM(element); navigation.navigate('Modal'); }}
                 style={{ ...styles.contentItem, backgroundColor: themeList[themeIndex].itemListBackground }}>

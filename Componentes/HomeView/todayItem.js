@@ -3,7 +3,8 @@ import { useContext, useState, useRef } from "react";
 import { DataContext } from "../Navigation_InfoContext/InfoContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { v4 as uuidv4 } from 'uuid';
-import { TODAY, DELETE} from '../StaticText.json';
+import { TODAY , DELETE_TITLE } from '../StaticText.json';
+
 
 export default function TodayItem({ navigation, setModal }) {
     let { languageList, languageIndex, todayNotes } = useContext(DataContext).info;
@@ -11,7 +12,7 @@ export default function TodayItem({ navigation, setModal }) {
     return (
         <View style={styles1.todayView}>
             <LinearGradient
-                colors={['#ed3939', 'transparent']}
+                colors={['#F04B4F', 'transparent']}
                 style={{ width: '60%', height: 30 }}
                 start={[.2, 0]}
                 end={[.9, 0]}
@@ -88,7 +89,7 @@ function TodayItemList({ navigation, element, SM }) {
             <View style={{ ...styles.deleteBox, opacity: opacityValue }}>
                 <Text
                     style={styles.deleteText}
-                >{DELETE[languageList[languageIndex]]}</Text>
+                >{DELETE_TITLE[languageList[languageIndex]]}</Text>
             </View>
             <TouchableOpacity onPress={() => {
                 SM(element);

@@ -22,7 +22,8 @@ export default function Home({ setModal, navigation }) {
 
   return (
     <View style={{ ...styles.container, backgroundColor: (themeList[themeIndex].background) }}>
-      <StatusBar barStyle={themeList[themeIndex].typeTheme == 'dark' ? 'light-content' : 'dark-content'} backgroundColor={themeList[themeIndex].background} />
+      <StatusBar barStyle={
+        themeList[themeIndex].typeTheme == 'dark' ? 'light-content' : 'dark-content'} backgroundColor={themeList[themeIndex].background} />
       <BtnMenu OP={navigation.toggleDrawer} />
       <BtnAddNewNote onPressEvent={createNewNote} />
       <ScrollView style={styles.scrollBox}>

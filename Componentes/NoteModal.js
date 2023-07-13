@@ -4,33 +4,7 @@ import { useContext, useState, useEffect, useRef } from 'react';
 import { BtnAddNoteModal, BtnRemoveNoteModal } from './Btns';
 import { DataContext } from './Navigation_InfoContext/InfoContext';
 import { v4 as uuidv4 } from 'uuid';
-
-
-const modalTitle = {
-    EN: {
-        es: "Editar nota",
-        en: "Edit note"
-    },
-    CNN: {
-        es: "Nota nueva",
-        en: 'New note'
-    }
-}
-
-const LanguageVariables = {
-    fecha: {
-        es: "Fecha",
-        en: "Date"
-    },
-    hour: {
-        es: "Hora",
-        en: "Hour"
-    },
-    msgNote: {
-        es: "Asunto",
-        en: "Note"
-    }
-}
+import { ASUNTO, HOUR, FECHA, EDIT_NOTE , NEW_NOTE } from './StaticText.json';
 
 export default function NoteModal({ modal, setModal, navigation }) {
     const [idNumber, setIdNumber] = useState(null);
@@ -84,7 +58,7 @@ export default function NoteModal({ modal, setModal, navigation }) {
         });
         setModal(undefined);
         navigation.navigate("Home");
-    }
+    };
 
     return (
         <View style={{
@@ -99,7 +73,7 @@ export default function NoteModal({ modal, setModal, navigation }) {
                             color: themeList[themeIndex].textColor
                         }}
                     >
-                        {modal === undefined ? modalTitle.CNN[languageList[languageIndex]] : modalTitle.EN[languageList[languageIndex]]}
+                        {modal === undefined ? NEW_NOTE[languageList[languageIndex]] : EDIT_NOTE[languageList[languageIndex]]}
                     </Text>
                     <TouchableOpacity
                         style={{
@@ -119,7 +93,7 @@ export default function NoteModal({ modal, setModal, navigation }) {
                         <Text style={{
                             ...styles.horaFechaTitle,
                             color: themeList[themeIndex].textColor
-                        }}>{LanguageVariables.fecha[languageList[languageIndex]]}</Text>
+                        }}>{FECHA[languageList[languageIndex]]}</Text>
                         <Text style={{
                             ...styles.horaFechaText,
                             color: themeList[themeIndex].textColor,
@@ -132,7 +106,7 @@ export default function NoteModal({ modal, setModal, navigation }) {
                         <Text style={{
                             ...styles.horaFechaTitle,
                             color: themeList[themeIndex].textColor
-                        }}>{LanguageVariables.hour[languageList[languageIndex]]}</Text>
+                        }}>{HOUR[languageList[languageIndex]]}</Text>
                         <Text style={{
                             ...styles.horaFechaText,
                             color: themeList[themeIndex].textColor,
@@ -148,7 +122,7 @@ export default function NoteModal({ modal, setModal, navigation }) {
                     <Text style={{
                         ...styles.horaFechaTitle,
                         color: themeList[themeIndex].textColor
-                    }}>{LanguageVariables.msgNote[languageList[languageIndex]]}</Text>
+                    }}>{ASUNTO[languageList[languageIndex]]}</Text>
                     <TextInput
                         defaultValue={text}
                         style={{
@@ -162,8 +136,9 @@ export default function NoteModal({ modal, setModal, navigation }) {
                         inputMode='text'
                         multiline={true}
                         numberOfLines={19}
-
+                        maxLength={200}
                     />
+                    <Text style={{...styles.limitLength, color:themeList[themeIndex].textColor}}>{ text.length + ' / 200'}</Text>
                 </View>
                 <View style={styles.btnBox}>
                     {modal !== undefined && <BtnRemoveNoteModal RI={removeInfo} />}
@@ -281,10 +256,15 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
         backgroundColor: '#C0C2C8',
         textAlignVertical: 'top',
-        fontSize: 20,
+        fontSize: 28,
         color: '#000',
         alignSelf: 'center',
         justifyContent: 'center'
+    },
+    limitLength:{
+        position:'absolute',
+        bottom:10,
+        right:10
     },
     btnBox: {
         width: '86%',

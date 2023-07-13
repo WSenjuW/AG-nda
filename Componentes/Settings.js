@@ -1,22 +1,7 @@
 import { useContext, useRef } from "react"
-import { View, StyleSheet, TouchableOpacity, Text, Animated, FlatList, touchab, StatusBar } from "react-native"
+import { View, StyleSheet, TouchableOpacity, Text, Animated, FlatList, StatusBar } from "react-native"
 import { DataContext } from "./Navigation_InfoContext/InfoContext"
-
-
-const languageVar = {
-    theme: {
-        es: "Tema",
-        en: "Theme"
-    },
-    language: {
-        es: 'Idioma',
-        en: 'Language'
-    },
-    idioma: {
-        es: 'Español',
-        en: 'English'
-    }
-};
+import { SETTING_OPTIONS } from './StaticText.json';
 
 export default function Settings(params) {
     const { themeList, themeIndex, languageList, languageIndex } = useContext(DataContext).info;
@@ -66,7 +51,7 @@ export default function Settings(params) {
                             backgroundColor: (themeList[themeIndex].btnBackground),
                             color: themeList[themeIndex].textColor
                         }} >
-                        {languageVar.theme[languageList[languageIndex]] + ' ' + themeList[themeIndex].themeTitle[0].toUpperCase() + themeList[themeIndex].themeTitle.substring(1)}
+                        {SETTING_OPTIONS.theme[languageList[languageIndex]] + ' ' + themeList[themeIndex].themeTitle[0].toUpperCase() + themeList[themeIndex].themeTitle.substring(1)}
                     </Text>
                 </TouchableOpacity>
                 <FlatList
@@ -104,7 +89,7 @@ export default function Settings(params) {
                         backgroundColor: (themeList[themeIndex].btnBackground),
                         color: themeList[themeIndex].textColor
                     }} >
-                        {languageVar.language[languageList[languageIndex]] + ' ' + languageVar.idioma[languageList[languageIndex]]}
+                        {SETTING_OPTIONS.lang[languageList[languageIndex]] + ' ' + SETTING_OPTIONS.idioma[languageList[languageIndex]]}
                     </Text>
                 </TouchableOpacity>
                 <FlatList
@@ -118,7 +103,7 @@ export default function Settings(params) {
                             style={{ ...styles.TOOption, backgroundColor: (themeList[themeIndex].btnBackground), }}  >
                             <Text
                                 style={{ ...styles.TOOptionText, color: themeList[themeIndex].textColor }}
-                            >{languageVar.idioma[item]}</Text>
+                            >{SETTING_OPTIONS.idioma[item]}</Text>
                         </TouchableOpacity>}
                     keyExtractor={(item, i) => i}
                 />

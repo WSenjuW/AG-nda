@@ -5,7 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/AGnda_icon.png",
-    "userInterfaceStyle": "light",
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#202020"
+    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -34,6 +37,6 @@
         "projectId": "ad63f09c-4d03-4c58-ba95-ba71dbd66b74"
       }
     },
-    "owner": "WSenjuW"
+    "owner": "WSenjuW",
   }
 }

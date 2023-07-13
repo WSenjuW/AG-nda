@@ -4,9 +4,6 @@ import Svg, { Path } from "react-native-svg"
 import { View, TouchableOpacity } from 'react-native';
 import { DataContext } from "./Navigation_InfoContext/InfoContext";
 
-
-
-
 function BtnMenu({ OP }) {
   let { themeList, themeIndex } = useContext(DataContext).info;
 
@@ -22,6 +19,8 @@ function BtnMenu({ OP }) {
       top: -30,
       display: 'flex',
       zIndex: 50,
+      borderWidth:.3,
+      borderColor:'#000'
     }}>
     <View
       style={{
@@ -128,6 +127,8 @@ function BtnAddNewNote({ onPressEvent }) {
         zIndex: 50,
         backgroundColor: (themeList[themeIndex].btnBackground),
         borderRadius: 100,
+        borderWidth:.3,
+        borderColor:'#000',
       }}>
       <Svg
         xmlns="http://www.w3.org/2000/svg"

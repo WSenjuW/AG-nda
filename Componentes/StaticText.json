@@ -17,6 +17,10 @@
     "lang": {
       "es": "Lenguaje",
       "en": "Language"
+    },
+    "idioma":{
+      "es": "Español",
+      "en": "English"
     }
   },
   "TODAY": {
@@ -71,8 +75,32 @@
     "es": "No tienes notas por ahora.",
     "en": "You don't have any notes saved."
   },
-  "DELETE": {
+  "DELETE_TITLE": {
     "es": "Eliminar",
     "en": "Delete"
+  },
+  "EDIT_NOTE":{
+    "es":"Editar nota",
+    "en":"Edit note"
+  },
+  "NEW_NOTE":{
+    "es": "Nota nueva",
+    "en": "New note"
+  },
+  "FECHA":{
+    "es": "Fecha",
+    "en": "Date"
+  },
+  "HOUR":{
+    "es": "Hora",
+    "en": "Hour"
+  },
+  "ASUNTO":{
+    "es": "Asunto",
+    "en": "Note"
+  },
+  "PAST_NOTES_MSG":{
+    "es":"No tienes notas antiguas.",
+    "en":"You don't have any old notes"
   }
 }

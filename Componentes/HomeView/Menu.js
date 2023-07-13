@@ -22,7 +22,9 @@ export default function Menu({ navigation }) {
                 }}
                 >{MENU.STT[languageList[languageIndex]]}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{
+            <TouchableOpacity 
+            onPress={()=> navigation.navigate('pastNotes')}
+            style={{
                 ...styles.menuItem,
                 borderColor: themeList[themeIndex].textColor,
                 backgroundColor: (themeList[themeIndex].btnBackground)

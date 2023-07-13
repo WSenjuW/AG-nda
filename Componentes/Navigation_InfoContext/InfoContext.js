@@ -2,10 +2,11 @@ import { useEffect, useReducer, createContext, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
-    pastNotes: {},
+    pastNotes: {
+    },
     todayNotes: [],
     notes: {},
-    languageList: ['es', 'en'],
+    languageList: ['en', 'es'],
     languageIndex: 0,
     themeIndex: 0,
     themeList: [
@@ -148,7 +149,12 @@ const reducer = (state, action) => {
                     state.notes[ITEM_YEAR] = new Object;
                     state.notes[ITEM_YEAR][ITEM_MONTH] = [action.item];
                 } else {
-                    state.notes[ITEM_YEAR][ITEM_MONTH].push(action.item);
+                    if (state.notes[ITEM_YEAR][ITEM_MONTH] == undefined) {
+                        state.notes[ITEM_YEAR][ITEM_MONTH] = [];
+                        state.notes[ITEM_YEAR][ITEM_MONTH].push(action.item);
+                    } else {
+                        state.notes[ITEM_YEAR][ITEM_MONTH].push(action.item);
+                    }
                 }
             }
 
@@ -190,7 +196,7 @@ const reducer = (state, action) => {
             return state
         }
             break;
-        default:{
+        default: {
             updateNotes();
             return state
         }
