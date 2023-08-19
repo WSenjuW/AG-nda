@@ -34,29 +34,7 @@ const reducer = (state, action) => {
     function updateNotes() {
         let todayDate = new Date();
         let yearNotes = Object.keys(state.notes).filter(e => Number(e) <= todayDate.getFullYear());
-
-
-        // A continuación esta un if para actualizar los datos del todayNotes.
-        if (state.todayNotes.length !== 0) {
-            state.todayNotes.forEach(item => {
-                let infoDate = new Date(item.date);
-                let year = infoDate.getFullYear();
-                let mes = infoDate.getDate();
-                if (infoDate.getDate() !== todayDate.getDate()) {
-                    if (state.pastNotes[year] === undefined) {
-                        state.pastNotes[year] = new Object();
-                        state.pastNotes[year][mes] = new Array();
-                        state.pastNotes[year][mes].push(item);
-                    } else {
-                        if (state.pastNotes[year][mes] == undefined) state.pastNotes[year][mes] = [item]
-                        else state.pastNotes[year][mes].push(item);
-                    }
-                    state.todayNotes = state.todayNotes.filter(e => e.id !== item.id);
-                }
-            })
-        }
-
-
+        
         if (yearNotes.length !== 0) {
             // este forEach trabaja con los diferentes años en el objeto notes;
             yearNotes.forEach(e => {
@@ -82,7 +60,7 @@ const reducer = (state, action) => {
                                         state.pastNotes[e][elemento].push(el);
                                     } else {
                                         if (state.pastNotes[e][elemento] == undefined)
-                                            state.pastNotes[e][elemento] = [el]
+                                        state.pastNotes[e][elemento] = [el]
                                         else state.pastNotes[e][elemento].push(el)
                                     }
                                     state.notes[e][elemento] = state.notes[e][elemento].filter(item => item.id !== el.id);
@@ -100,8 +78,28 @@ const reducer = (state, action) => {
                     })
                 }
             })
+        };
+        
+        // A continuación esta un if para actualizar los datos del todayNotes.
+        if (state.todayNotes.length !== 0) {
+            state.todayNotes.forEach(item => {
+                let infoDate = new Date(item.date);
+                let year = infoDate.getFullYear();
+                let mes = infoDate.getDate();
+                if (infoDate.getDate() !== todayDate.getDate()) {
+                    if (state.pastNotes[year] === undefined) {
+                        state.pastNotes[year] = new Object();
+                        state.pastNotes[year][mes] = new Array();
+                        state.pastNotes[year][mes].push(item);
+                    } else {
+                        if (state.pastNotes[year][mes] == undefined) state.pastNotes[year][mes] = [item]
+                        else state.pastNotes[year][mes].push(item);
+                    }
+                    state.todayNotes = state.todayNotes.filter(e => e.id !== item.id);
+                }
+            })
         }
-    }
+    };
 
     switch (action.type) {
         case "CHANGE_LANGUAGE": {

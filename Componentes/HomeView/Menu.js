@@ -1,10 +1,24 @@
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { DataContext } from "../Navigation_InfoContext/InfoContext";
 import { MENU } from '../StaticText.json';
 
 export default function Menu({ navigation }) {
-    const { themeList, themeIndex, languageList, languageIndex, pastNotes } = useContext(DataContext).info;
+    const { themeList, themeIndex, languageList, languageIndex, pastNotes, notes } = useContext(DataContext).info;
+    const PN_Length = useRef(0);
+
+    useEffect(() => {
+        // Este useEffect sirve para actualizar la cantidad de notas antiguas.
+        let valueLength = 0;
+        if (Object.keys(pastNotes).length !== 0) {
+            Object.keys(pastNotes).forEach((element) => {
+               Object.keys(pastNotes[element]).forEach((el) =>{
+                  valueLength += pastNotes[element][el].length;
+               })
+            });
+        };
+        PN_Length.current = valueLength;
+    });
 
     return (
         <View style={{ ...styles.menuBox, backgroundColor: themeList[themeIndex].background }}>
@@ -22,22 +36,34 @@ export default function Menu({ navigation }) {
                 }}
                 >{MENU.STT[languageList[languageIndex]]}</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-            onPress={()=> navigation.navigate('pastNotes')}
-            style={{
-                ...styles.menuItem,
-                borderColor: themeList[themeIndex].textColor,
-                backgroundColor: (themeList[themeIndex].btnBackground)
-            }}
+            <TouchableOpacity
+                onPress={() => navigation.navigate('pastNotes')}
+                style={{
+                    ...styles.menuItem,
+                    borderColor: themeList[themeIndex].textColor,
+                    backgroundColor: (themeList[themeIndex].btnBackground)
+                }}
             >
                 <Text style={{
                     ...styles.menuItemText,
                     color: themeList[themeIndex].textColor
                 }}>
-                {MENU.P_N[languageList[languageIndex]]}
+                    {MENU.P_N[languageList[languageIndex]]}
+                </Text>
+                <Text
+                    style={{
+                        ...styles.PN_length_Styles,
+                        color: themeList[themeIndex].textColor,
+                    }}
+                >
+                    {PN_Length.current}
                 </Text>
             </TouchableOpacity>
-            <Text style={{ ...styles.infoDeveloped, color: themeList[themeIndex].textColor }}>Developed by WSenjuW</Text>
+            <Text style={{
+                ...styles.infoDeveloped,
+                color: themeList[themeIndex].textColor
+            }}
+            >Developed by M.M</Text>
         </View>
     )
 }
@@ -75,4 +101,11 @@ const styles = StyleSheet.create({
         paddingLeft: 8,
         letterSpacing: 2,
     },
+    PN_length_Styles: {
+        height: '100%',
+        textAlignVertical: 'center',
+        position: 'absolute',
+        right: 22,
+        fontSize: 20,
+    }
 });

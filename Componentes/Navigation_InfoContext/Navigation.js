@@ -1,4 +1,4 @@
-import { DataContext, InfoContext } from './InfoContext.js';
+import { DataContext } from './InfoContext.js';
 import { createNativeStackNavigator, } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useContext, useState } from 'react';
